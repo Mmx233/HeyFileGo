@@ -46,7 +46,7 @@ func SelectEthToQr(port string) {
 			log.Println("warning: 读取输入异常：", e)
 			continue
 		}
-		if len(ipSelect) <= n || n <= 0 {
+		if len(ipSelect) <= n || n < 0 {
 			log.Println("warning: 序号不正确：", e)
 			continue
 		}
