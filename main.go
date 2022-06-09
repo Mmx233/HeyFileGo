@@ -11,15 +11,17 @@ import (
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		log.Println("info: 文件传入模式")
+		controllers.ServeUpload()
+	} else {
+		log.Println("info: 文件上载模式")
+		controllers.ServeFile(os.Args[1])
+	}
+
 	listener, e := net.Listen("tcp", ":0")
 	if e != nil {
 		log.Fatalln("error: 监听失败：", e)
-	}
-
-	if len(os.Args) < 2 {
-		log.Fatalln("error: 请传入文件")
-	} else {
-		controllers.ServeFile(os.Args[1])
 	}
 
 	go func() {

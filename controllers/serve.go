@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"HeyFileGo/frontend"
 	"HeyFileGo/global"
 	"fmt"
 	"github.com/Mmx233/tool"
 	"github.com/gin-gonic/gin"
+	"html/template"
 	"log"
 	"path"
 	"strings"
@@ -27,5 +29,28 @@ func ServeFile(filePath string) {
 }
 
 func ServeUpload() {
+	t, e := template.ParseFS(frontend.FS, "*.html")
+	if e != nil {
+		log.Fatalln(e)
+	}
+	global.G.SetHTMLTemplate(t)
 
+	global.G.GET("/", func(c *gin.Context) {
+		c.HTML(200, "upload.html", nil)
+	})
+	global.G.POST("/upload", func(c *gin.Context) {
+		f, e := c.FormFile("file")
+		if e != nil {
+			c.AbortWithStatus(400)
+			return
+		}
+
+		if e = c.SaveUploadedFile(f, f.Filename); e != nil {
+			log.Println("warning: 文件传输失败：", e)
+			c.AbortWithStatus(500)
+			return
+		}
+
+		log.Println("info: 文件 " + f.Filename + " 已保存")
+	})
 }
