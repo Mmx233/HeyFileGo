@@ -7,7 +7,9 @@ import (
 	"github.com/Mmx233/tool"
 	"github.com/gin-gonic/gin"
 	"html/template"
+	"io/fs"
 	"log"
+	"net/http"
 	"path"
 	"strings"
 )
@@ -35,6 +37,11 @@ func ServeUpload() {
 	}
 	global.G.SetHTMLTemplate(t)
 
+	static, e := fs.Sub(frontend.Static, "static")
+	if e != nil {
+		log.Fatalln(e)
+	}
+	global.G.StaticFS("/static", http.FS(static))
 	global.G.GET("/", func(c *gin.Context) {
 		c.HTML(200, "upload.html", nil)
 	})
