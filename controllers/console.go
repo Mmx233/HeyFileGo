@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/Han-Ya-Jun/qrcode2console"
+	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
 	"log"
 	"net"
 )
@@ -53,6 +53,6 @@ func SelectEthToQr(port string) {
 
 		url := "http://" + ipSelect[n] + ":" + port
 		fmt.Println("URL: ", url)
-		qrcode2console.NewQRCode2ConsoleWithUrl(url, false).Output()
+		qrcodeTerminal.New().Get(url).Print()
 	}
 }
