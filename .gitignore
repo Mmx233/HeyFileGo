@@ -1,3 +1,7 @@
-/.idea
+.idea/
 /HeyFileGo*
 /*bat
+
+node_modules/
+/frontend/**/build/
+/frontend/**/dist/
