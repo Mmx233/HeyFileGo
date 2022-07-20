@@ -31,4 +31,5 @@ func main() {
 	}()
 
 	controllers.SelectEthToQr(fmt.Sprint(listener.Addr().(*net.TCPAddr).Port))
+	select {}
 }

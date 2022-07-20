@@ -34,25 +34,34 @@ func SelectEthToQr(port string) {
 		}
 	}
 
-	for i := range ethSelect {
-		fmt.Println(i, ethSelect[i])
-	}
-
-	for {
-		fmt.Printf("选择网卡（序号）：")
-		var n int
-		_, e = fmt.Scanln(&n)
-		if e != nil {
-			log.Println("warning: 读取输入异常：", e)
-			continue
-		}
-		if len(ipSelect) <= n || n < 0 {
-			log.Println("warning: 序号不正确：", e)
-			continue
-		}
-
-		url := "http://" + ipSelect[n] + ":" + port
+	switch len(ethSelect) {
+	case 0:
+		fmt.Println("未找到可用网卡！")
+	case 1:
+		url := "http://" + ipSelect[0] + ":" + port
 		fmt.Println("URL: ", url)
 		qrcodeTerminal.New().Get(url).Print()
+	default:
+		for i := range ethSelect {
+			fmt.Println(i, ethSelect[i])
+		}
+
+		for {
+			fmt.Printf("选择网卡（序号）：\n")
+			var n int
+			_, e = fmt.Scanln(&n)
+			if e != nil {
+				log.Println("warning: 读取输入异常：", e)
+				continue
+			}
+			if len(ipSelect) <= n || n < 0 {
+				log.Println("warning: 序号不正确：", e)
+				continue
+			}
+
+			url := "http://" + ipSelect[n] + ":" + port
+			fmt.Println("URL: ", url)
+			qrcodeTerminal.New().Get(url).Print()
+		}
 	}
 }
