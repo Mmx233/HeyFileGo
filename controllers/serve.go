@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/Mmx233/tool"
 	"github.com/gin-gonic/gin"
+	"github.com/qingstor/go-mime"
 	"html/template"
 	"io/fs"
 	"log"
@@ -19,6 +20,8 @@ func ServeFile(filePath string) {
 		log.Fatalln(fmt.Sprintf("error: 文件 %s 不存在", filePath))
 	}
 
+	mimeType := mime.DetectFilePath(filePath)
+
 	fileName := path.Base(strings.Replace(filePath, `\`, `/`, -1))
 
 	global.G.GET("/", func(c *gin.Context) {
@@ -26,6 +29,7 @@ func ServeFile(filePath string) {
 	})
 
 	global.G.GET("/"+fileName, func(c *gin.Context) {
+		c.Header("Content-Type", mimeType)
 		c.File(filePath)
 	})
 }
