@@ -55,7 +55,7 @@ const App = () => (
         <p className="ant-upload-drag-icon">
             <InboxOutlined />
         </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+        <p className="ant-upload-text">点击上传或将文件拖拽到此区域</p>
     </Dragger>
 );
 
