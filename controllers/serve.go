@@ -35,19 +35,19 @@ func ServeFile(filePath string) {
 }
 
 func ServeUpload() {
-	t, e := template.ParseFS(frontend.FS, "*.html")
+	t, e := template.ParseFS(frontend.UploadHTML, "source/upload/build/index.html")
 	if e != nil {
 		log.Fatalln(e)
 	}
 	global.G.SetHTMLTemplate(t)
 
-	static, e := fs.Sub(frontend.Static, "static")
+	static, e := fs.Sub(frontend.UploadStatic, "source/upload/build/static")
 	if e != nil {
 		log.Fatalln(e)
 	}
 	global.G.StaticFS("/static", http.FS(static))
 	global.G.GET("/", func(c *gin.Context) {
-		c.HTML(200, "upload.html", nil)
+		c.HTML(200, "index.html", nil)
 	})
 	global.G.POST("/upload", func(c *gin.Context) {
 		f, e := c.FormFile("file")

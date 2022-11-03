@@ -2,8 +2,10 @@ package frontend
 
 import "embed"
 
-//go:embed *.html
-var FS embed.FS
+var (
+	//go:embed source/upload/build/index.html
+	UploadHTML embed.FS
 
-//go:embed static/*
-var Static embed.FS
+	//go:embed source/upload/build/static/*
+	UploadStatic embed.FS
+)
