@@ -26,6 +26,7 @@ const App = () => (
     <Dragger
         name="file"
         action="/upload"
+        multiple
         showUploadList={{
             showRemoveIcon:false
         }}
