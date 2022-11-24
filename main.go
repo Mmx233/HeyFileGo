@@ -3,6 +3,7 @@ package main
 import (
 	"HeyFileGo/controllers"
 	"HeyFileGo/global"
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -11,7 +12,7 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
+	if len(flag.Args()) < 2 {
 		log.Println("info: 文件传入模式")
 		controllers.ServeUpload()
 	} else {
@@ -19,7 +20,7 @@ func main() {
 		controllers.ServeFile(os.Args[1])
 	}
 
-	listener, e := net.Listen("tcp", ":0")
+	listener, e := net.Listen("tcp", ":"+fmt.Sprint(global.Flags.Port))
 	if e != nil {
 		log.Fatalln("error: 监听失败：", e)
 	}
