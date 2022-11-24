@@ -1,21 +1,21 @@
 package global
 
 import (
-	"flag"
-	"log"
+	"github.com/jessevdk/go-flags"
+	"os"
 )
 
 var Flags struct {
-	Port uint
-	Ssl  bool
+	Port uint16 `short:"p" long:"port"`
+	Ssl  bool   `short:"s" long:"ssl" description:"use https"`
 }
 
-func init() {
-	flag.UintVar(&Flags.Port, "p", 0, "port")
-	flag.BoolVar(&Flags.Ssl, "ssl", false, "use https")
-	flag.Parse()
+var Args []string
 
-	if Flags.Port > 65535 {
-		log.Fatalln("port cannot bigger than 65535")
+func init() {
+	var e error
+	Args, e = flags.ParseArgs(&Flags, os.Args)
+	if e != nil {
+		panic(e)
 	}
 }

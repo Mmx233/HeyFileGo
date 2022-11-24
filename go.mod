@@ -6,6 +6,7 @@ require (
 	github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f
 	github.com/Mmx233/tool v0.6.8
 	github.com/gin-gonic/gin v1.8.1
+	github.com/jessevdk/go-flags v1.5.0
 	github.com/qingstor/go-mime v0.1.0
 )
 

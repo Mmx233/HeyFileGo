@@ -5,7 +5,6 @@ import (
 	"HeyFileGo/global"
 	"HeyFileGo/util"
 	"crypto/tls"
-	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -14,7 +13,7 @@ import (
 )
 
 func main() {
-	if len(flag.Args()) < 2 {
+	if len(global.Args) < 2 {
 		log.Println("info: 文件传入模式")
 		controllers.ServeUpload()
 	} else {
