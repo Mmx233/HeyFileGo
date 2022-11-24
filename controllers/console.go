@@ -1,11 +1,23 @@
 package controllers
 
 import (
+	"HeyFileGo/global"
 	"fmt"
 	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
 	"log"
 	"net"
 )
+
+func genUrl(ip, port string) string {
+	var portal = "http"
+	if global.Flags.Ssl {
+		portal += "s"
+	}
+	if (port == "80" && !global.Flags.Ssl) || (port == "443" && global.Flags.Ssl) {
+		return portal + "://" + ip
+	}
+	return portal + "://" + ip + ":" + port
+}
 
 func SelectEthToQr(port string) {
 	eth, e := net.Interfaces()
@@ -38,7 +50,7 @@ func SelectEthToQr(port string) {
 	case 0:
 		fmt.Println("未找到可用网卡！")
 	case 1:
-		url := "http://" + ipSelect[0] + ":" + port
+		url := genUrl(ipSelect[0], port)
 		fmt.Println("URL: ", url)
 		qrcodeTerminal.New().Get(url).Print()
 	default:
@@ -59,7 +71,7 @@ func SelectEthToQr(port string) {
 				continue
 			}
 
-			url := "http://" + ipSelect[n] + ":" + port
+			url := genUrl(ipSelect[n], port)
 			fmt.Println("URL: ", url)
 			qrcodeTerminal.New().Get(url).Print()
 		}
