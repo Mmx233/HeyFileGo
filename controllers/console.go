@@ -10,10 +10,10 @@ import (
 
 func genUrl(ip, port string) string {
 	var portal = "http"
-	if global.Flags.Ssl {
+	if global.Commands.Ssl {
 		portal += "s"
 	}
-	if (port == "80" && !global.Flags.Ssl) || (port == "443" && global.Flags.Ssl) {
+	if (port == "80" && !global.Commands.Ssl) || (port == "443" && global.Commands.Ssl) {
 		return portal + "://" + ip
 	}
 	return portal + "://" + ip + ":" + port

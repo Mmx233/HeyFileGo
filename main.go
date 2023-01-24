@@ -13,7 +13,9 @@ import (
 )
 
 func main() {
-	if len(global.Args) < 2 {
+	global.ParseFlags(os.Args[1:])
+
+	if len(global.Commands.Files) == 0 {
 		log.Println("info: 文件传入模式")
 		controllers.ServeUpload()
 	} else {
@@ -21,14 +23,14 @@ func main() {
 		controllers.ServeFile(os.Args[1])
 	}
 
-	listener, e := net.Listen("tcp", ":"+fmt.Sprint(global.Flags.Port))
+	listener, e := net.Listen("tcp", ":"+fmt.Sprint(global.Commands.Port))
 	if e != nil {
 		log.Fatalln("error: 监听失败：", e)
 	}
 
 	go func() {
 		var e error
-		if global.Flags.Ssl {
+		if global.Commands.Ssl {
 			var cert tls.Certificate
 			cert, e = util.GenCert()
 			if e != nil {
