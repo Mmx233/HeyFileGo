@@ -6,22 +6,23 @@ import (
 )
 
 var Mode string
-var Root *os.File
+
+var FileInfo os.FileInfo
 
 func initServer() {
 	if Commands.Path == "" {
 		Mode = ModeUpload
 	} else {
-		var err error
-		Root, err = os.OpenFile(Commands.Path, os.O_RDONLY, 0600)
+		rootFile, err := os.OpenFile(Commands.Path, os.O_RDONLY, 0600)
 		if err != nil {
 			log.Fatalln("读取目标路径失败:", err)
 		}
-		rootInfo, err := Root.Stat()
+		defer rootFile.Close()
+		FileInfo, err = rootFile.Stat()
 		if err != nil {
 			log.Fatalln("读取路径信息失败:", err)
 		}
-		if rootInfo.IsDir() {
+		if FileInfo.IsDir() {
 			Mode = ModeDir
 			Mode = ModeFile
 		}

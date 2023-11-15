@@ -1,39 +1,12 @@
 package controllers
 
 import (
-	"github.com/Mmx233/HeyFileGo/v2/frontend"
-	"github.com/Mmx233/HeyFileGo/v2/internal/global"
-	"github.com/Mmx233/tool"
 	"github.com/gin-gonic/gin"
-	"github.com/qingstor/go-mime"
 	"html/template"
 	"io/fs"
 	"log"
 	"net/http"
-	"path"
-	"strings"
 )
-
-func ServeFile(filePath string) {
-	if exist, err := tool.File.Exists(filePath); err != nil {
-		log.Fatalln("读取文件失败:", err)
-	} else if !exist {
-		log.Fatalf("error: 文件 %s 不存在", filePath)
-	}
-
-	mimeType := mime.DetectFilePath(filePath)
-
-	fileName := path.Base(strings.Replace(filePath, `\`, `/`, -1))
-
-	global.G.GET("/", func(c *gin.Context) {
-		c.Redirect(302, "/"+fileName)
-	})
-
-	global.G.GET("/"+fileName, func(c *gin.Context) {
-		c.Header("Content-Type", mimeType)
-		c.File(filePath)
-	})
-}
 
 func ServeUpload() {
 	t, e := template.ParseFS(frontend.UploadHTML, "source/upload/build/index.html")
