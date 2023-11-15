@@ -7,18 +7,6 @@ import (
 	"net"
 )
 
-/*
-func genUrl(ip, port string) string {
-	var portal = "http"
-	if global.Commands.Ssl {
-		portal += "s"
-	}
-	if (port == "80" && !global.Commands.Ssl) || (port == "443" && global.Commands.Ssl) {
-		return portal + "://" + ip
-	}
-	return portal + "://" + ip + ":" + port
-}*/
-
 func SelectEthToQr(port string) {
 	eth, e := net.Interfaces()
 	if e != nil {

@@ -13,17 +13,6 @@ import (
 )
 
 func main() {
-	var mode string
-
-	if len(config.Commands.Files) == 0 {
-		log.Println("info: 文件传入模式")
-		mode = "upload"
-	} else {
-		log.Println("info: 文件上载模式")
-		// todo 区分文件夹和文件
-		mode = "serve"
-	}
-
 	listener, e := net.Listen("tcp", ":"+fmt.Sprint(config.Commands.Port))
 	if e != nil {
 		log.Fatalln("error: 监听失败：", e)
@@ -31,7 +20,7 @@ func main() {
 
 	go func() {
 		var err error
-		engine := router.Init(mode)
+		engine := router.Init(config.Mode)
 		if config.Commands.Ssl {
 			var certificate tls.Certificate
 			certificate, err = cert.Gen()

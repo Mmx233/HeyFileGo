@@ -6,10 +6,10 @@ import (
 )
 
 var Commands struct {
-	App   *kingpin.Application
-	Ssl   bool
-	Port  uint
-	Files []string
+	App  *kingpin.Application
+	Ssl  bool
+	Port uint
+	Path string
 }
 
 func initCommands() {
@@ -17,7 +17,7 @@ func initCommands() {
 	Commands.App.HelpFlag.Short('h')
 	Commands.App.Flag("ssl", "Enable tls for transfer.").Short('s').BoolVar(&Commands.Ssl)
 	Commands.App.Flag("port", "Specify port.").Short('p').UintVar(&Commands.Port)
-	Commands.App.Arg("file", "The file you want to transfer.").StringsVar(&Commands.Files)
+	Commands.App.Arg("path", "The file or dir you want to transfer.").StringVar(&Commands.Path)
 
 	kingpin.MustParse(Commands.App.Parse(os.Args[1:]))
 }
