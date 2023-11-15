@@ -14,7 +14,7 @@ import (
 
 func apiServer(listener net.Listener) {
 	var err error
-	engine := router.Init(config.Mode)
+	engine := router.Init()
 	if config.Commands.Ssl {
 		var certificate tls.Certificate
 		certificate, err = cert.Gen()

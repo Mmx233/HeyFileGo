@@ -9,15 +9,13 @@ import (
 	"log"
 )
 
-func frontendHandler(mode string) gin.HandlerFunc {
+func frontendHandler() gin.HandlerFunc {
 	fs, err := web.Fs()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	handler, err := webServe.NewWithInterceptor(fs, func(c *gin.Context) {
-		c.Request.URL.Fragment = mode
-	})
+	handler, err := webServe.New(fs)
 	if err != nil {
 		log.Fatalln(err)
 	}

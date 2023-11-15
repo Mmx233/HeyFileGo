@@ -31,6 +31,7 @@ func Success(c *gin.Context, data interface{}) {
 	c.JSON(200, &Msg{
 		Data: data,
 	})
+	c.Abort()
 }
 
 func Default(c *gin.Context) {

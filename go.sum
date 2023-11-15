@@ -2,8 +2,8 @@ github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f h
 github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f/go.mod h1:4a58ifQTEe2uwwsaqbh3i2un5/CBPg+At/qHpt18Tmk=
 github.com/Mmx233/Gateway/v2 v2.0.6 h1:khTMGz7kipu5OFij3+AhsVHarOY0JyswXbtUbe0Oz6o=
 github.com/Mmx233/Gateway/v2 v2.0.6/go.mod h1:ft2UJaIIPdNTBtpuF3s5GInFNVP9VIfrOZWXR0kVVns=
-github.com/Mmx233/GinWebServe v1.0.3 h1:675pb6OYfQKvo0e2bXjWloAEKRwN1I8ZDHc92EUiq7o=
-github.com/Mmx233/GinWebServe v1.0.3/go.mod h1:ZkmwAvVXrIo8lGM44oAN+PaZNU+sbxmP2zmze77LfhY=
+github.com/Mmx233/GinWebServe v1.0.4 h1:vgR7bL5hrqernK8sNIvjfK9WNR3Mz0LFdI7Z/7hp0bQ=
+github.com/Mmx233/GinWebServe v1.0.4/go.mod h1:ZkmwAvVXrIo8lGM44oAN+PaZNU+sbxmP2zmze77LfhY=
 github.com/alecthomas/kingpin/v2 v2.3.2 h1:H0aULhgmSzN8xQ3nX1uxtdlTHYoPLu5AhHxWrKI6ocU=
 github.com/alecthomas/kingpin/v2 v2.3.2/go.mod h1:0gyi0zQnjuFk8xrkNKamJoyUo382HRL7ATRpFZCw6tE=
 github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 h1:s6gZFSlWYmbqAuRjVTiNNhvNRfY2Wxp9nhfyel4rklc=

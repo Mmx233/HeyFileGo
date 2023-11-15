@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func frontendHandler(mode string) gin.HandlerFunc {
+func frontendHandler() gin.HandlerFunc {
 	return gateway.Proxy(&gateway.ApiConf{
 		Addr:      "localhost:5173",
 		Transport: http.DefaultTransport,
@@ -17,10 +17,7 @@ func frontendHandler(mode string) gin.HandlerFunc {
 			log.Printf("调试页面请求转发失败: %v", err)
 		},
 		AllowRequest: func(c *gin.Context) bool {
-			return !c.Writer.Written() && c.FullPath() == ""
-		},
-		RequestInterceptor: func(req *http.Request) {
-			req.URL.Fragment = mode
+			return !c.Writer.Written()
 		},
 	})
 }
