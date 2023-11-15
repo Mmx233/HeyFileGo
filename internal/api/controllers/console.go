@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
-	"github.com/Mmx233/HeyFileGo/v2/global"
+	"github.com/Mmx233/HeyFileGo/v2/internal/global"
 	"log"
 	"net"
 )

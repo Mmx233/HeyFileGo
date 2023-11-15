@@ -1,7 +1,7 @@
 package global
 
 import (
-	"github.com/Mmx233/HeyFileGo/v2/global/models"
+	"github.com/Mmx233/HeyFileGo/v2/internal/global/models"
 	"github.com/alecthomas/kingpin/v2"
 )
 

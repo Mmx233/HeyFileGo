@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/Mmx233/HeyFileGo/v2/frontend"
-	"github.com/Mmx233/HeyFileGo/v2/global"
+	"github.com/Mmx233/HeyFileGo/v2/internal/global"
 	"github.com/Mmx233/tool"
 	"github.com/gin-gonic/gin"
 	"github.com/qingstor/go-mime"
