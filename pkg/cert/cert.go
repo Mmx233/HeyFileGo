@@ -1,4 +1,4 @@
-package tls
+package cert
 
 import (
 	"crypto/rand"
@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func GenCert() (tls.Certificate, error) {
+func Gen() (tls.Certificate, error) {
 	privateKey, _ := rsa.GenerateKey(rand.Reader, 2048)
 
 	serialNumber, _ := rand.Int(rand.Reader, new(big.Int).Lsh(big.NewInt(1), 128))

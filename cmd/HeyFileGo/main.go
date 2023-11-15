@@ -4,50 +4,52 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/controllers"
-	global2 "github.com/Mmx233/HeyFileGo/v2/internal/global"
-	tls2 "github.com/Mmx233/HeyFileGo/v2/pkg/tls"
+	"github.com/Mmx233/HeyFileGo/v2/internal/config"
+	"github.com/Mmx233/HeyFileGo/v2/internal/router"
+	"github.com/Mmx233/HeyFileGo/v2/pkg/cert"
 	"log"
 	"net"
 	"net/http"
-	"os"
 )
 
 func main() {
-	global2.ParseFlags(os.Args[1:])
+	var mode string
 
-	if len(global2.Commands.Files) == 0 {
+	if len(config.Commands.Files) == 0 {
 		log.Println("info: 文件传入模式")
-		controllers.ServeUpload()
+		mode = "upload"
 	} else {
 		log.Println("info: 文件上载模式")
-		controllers.ServeFile(os.Args[1])
+		// todo 区分文件夹和文件
+		mode = "serve"
 	}
 
-	listener, e := net.Listen("tcp", ":"+fmt.Sprint(global2.Commands.Port))
+	listener, e := net.Listen("tcp", ":"+fmt.Sprint(config.Commands.Port))
 	if e != nil {
 		log.Fatalln("error: 监听失败：", e)
 	}
 
 	go func() {
-		var e error
-		if global2.Commands.Ssl {
-			var cert tls.Certificate
-			cert, e = tls2.GenCert()
-			if e != nil {
-				panic(e)
+		var err error
+		engine := router.Init(mode)
+		if config.Commands.Ssl {
+			var certificate tls.Certificate
+			certificate, err = cert.Gen()
+			if err != nil {
+				panic(err)
 			}
 			srv := &http.Server{
-				Handler: global2.G,
+				Handler: engine,
 				TLSConfig: &tls.Config{
-					Certificates: []tls.Certificate{cert},
+					Certificates: []tls.Certificate{certificate},
 				},
 			}
-			e = srv.ServeTLS(listener, "", "")
+			err = srv.ServeTLS(listener, "", "")
 		} else {
-			e = http.Serve(listener, global2.G)
+			err = http.Serve(listener, engine)
 		}
-		if e != nil {
-			log.Fatalln("error: 启动 http 服务失败：", e)
+		if err != nil {
+			log.Fatalln("error: 启动 http 服务失败：", err)
 		}
 	}()
 
