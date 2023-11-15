@@ -2,7 +2,6 @@ package global
 
 import (
 	"HeyFileGo/global/models"
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 var Commands models.Commands

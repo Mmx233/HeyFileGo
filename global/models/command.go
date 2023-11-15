@@ -1,6 +1,6 @@
 package models
 
-import "gopkg.in/alecthomas/kingpin.v2"
+import "github.com/alecthomas/kingpin/v2"
 
 type Commands struct {
 	App   *kingpin.Application
