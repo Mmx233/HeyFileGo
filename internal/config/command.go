@@ -1,13 +1,15 @@
-package global
+package config
 
-import (
-	"github.com/Mmx233/HeyFileGo/v2/internal/global/models"
-	"github.com/alecthomas/kingpin/v2"
-)
+import "github.com/alecthomas/kingpin/v2"
 
-var Commands models.Commands
+var Commands struct {
+	App   *kingpin.Application
+	Ssl   bool
+	Port  uint
+	Files []string
+}
 
-func init() {
+func initCommands() {
 	Commands.App = kingpin.New("HeyFileGo", "A lightweight file transfer tool.")
 	Commands.App.HelpFlag.Short('h')
 	Commands.App.Flag("ssl", "Enable tls for transfer.").Short('s').BoolVar(&Commands.Ssl)
