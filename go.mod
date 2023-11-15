@@ -4,15 +4,13 @@ go 1.21.2
 
 require (
 	github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f
-	github.com/Mmx233/tool v0.7.3
+	github.com/Mmx233/Gateway/v2 v2.0.6
+	github.com/Mmx233/GinWebServe v1.0.3
 	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/gin-gonic/gin v1.9.1
-	github.com/qingstor/go-mime v0.1.0
 )
 
 require (
-	github.com/Mmx233/Gateway/v2 v2.0.6 // indirect
-	github.com/Mmx233/GinWebServe v1.0.3 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
