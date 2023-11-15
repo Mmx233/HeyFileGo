@@ -13,4 +13,8 @@ func Init(G *gin.RouterGroup) {
 	file.GET("info", controllers.FileInfo)
 
 	G.POST("upload", middlewares.MustMode(config.ModeUpload), controllers.Upload)
+
+	dir := G.Group("dir", middlewares.MustMode(config.ModeDir))
+	dir.GET("/", controllers.DirContent)
+	dir.POST("/", controllers.DirUpload)
 }

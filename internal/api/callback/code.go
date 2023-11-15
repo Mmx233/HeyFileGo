@@ -4,6 +4,7 @@ const (
 	cErrForm uint8 = iota + 1
 	cErrMode
 	cErrFileOperation
+	cErrNotDir
 )
 
 var (
@@ -21,5 +22,10 @@ var (
 		Code:       cErrFileOperation,
 		Msg:        "文件操作失败",
 		HttpStatus: 500,
+	}
+	ErrNotDir = Msg{
+		Code:       cErrNotDir,
+		Msg:        "目标文件不是文件夹",
+		HttpStatus: 403,
 	}
 )

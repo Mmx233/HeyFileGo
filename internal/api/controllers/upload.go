@@ -25,6 +25,6 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	log.Println("info: 文件 " + f.Filename + " 已保存")
+	log.Println("文件 " + f.Filename + " 已保存")
 	callback.Default(c)
 }
