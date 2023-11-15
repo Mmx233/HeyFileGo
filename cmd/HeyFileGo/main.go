@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/controllers"
 	global2 "github.com/Mmx233/HeyFileGo/v2/internal/global"
-	"github.com/Mmx233/HeyFileGo/v2/tools"
+	tls2 "github.com/Mmx233/HeyFileGo/v2/pkg/tls"
 	"log"
 	"net"
 	"net/http"
@@ -32,7 +32,7 @@ func main() {
 		var e error
 		if global2.Commands.Ssl {
 			var cert tls.Certificate
-			cert, e = tools.GenCert()
+			cert, e = tls2.GenCert()
 			if e != nil {
 				panic(e)
 			}
