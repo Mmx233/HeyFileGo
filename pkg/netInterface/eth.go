@@ -2,11 +2,19 @@ package netInterface
 
 import (
 	"net"
+	"net/url"
 )
 
 type Eth struct {
 	Name string
 	Ip   string
+}
+
+func (e Eth) Url(scheme, port string) *url.URL {
+	return &url.URL{
+		Scheme: scheme,
+		Host:   e.Ip + ":" + port,
+	}
 }
 
 func Load() ([]Eth, error) {

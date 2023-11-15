@@ -2,6 +2,7 @@ package netInterface
 
 import (
 	"fmt"
+	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
 	"net/url"
 )
 
@@ -23,16 +24,16 @@ type Printer struct {
 	port   string
 }
 
-func (p Printer) AddrStr(eth Eth) string {
-	addr := url.URL{
-		Scheme: p.scheme,
-		Host:   eth.Ip + ":" + p.port,
+func (p Printer) EthSelect(list []Eth) []*url.URL {
+	urlList := make([]*url.URL, len(list))
+	for i, eth := range list {
+		ethUrl := eth.Url(p.scheme, p.port)
+		urlList[i] = ethUrl
+		fmt.Println(i, fmt.Sprintf("%s（%s）", eth.Name, ethUrl))
 	}
-	return fmt.Sprintf("%s（%s）", eth.Name, addr.String())
+	return urlList
 }
 
-func (p Printer) EthSelect(list []Eth) {
-	for i, eth := range list {
-		fmt.Println(i, p.AddrStr(eth))
-	}
+func (p Printer) Qr(ethUrl *url.URL) {
+	qrcodeTerminal.New().Get(ethUrl).Print()
 }
