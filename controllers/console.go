@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"HeyFileGo/global"
 	"fmt"
 	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
+	"github.com/Mmx233/HeyFileGo/v2/global"
 	"log"
 	"net"
 )

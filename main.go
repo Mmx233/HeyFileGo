@@ -1,11 +1,11 @@
 package main
 
 import (
-	"HeyFileGo/controllers"
-	"HeyFileGo/global"
-	"HeyFileGo/util"
 	"crypto/tls"
 	"fmt"
+	"github.com/Mmx233/HeyFileGo/v2/controllers"
+	"github.com/Mmx233/HeyFileGo/v2/global"
+	"github.com/Mmx233/HeyFileGo/v2/util"
 	"log"
 	"net"
 	"net/http"

@@ -1,4 +1,4 @@
-module HeyFileGo
+module github.com/Mmx233/HeyFileGo/v2
 
 go 1.21.2
 

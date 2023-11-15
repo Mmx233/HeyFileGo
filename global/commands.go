@@ -1,7 +1,8 @@
 package global
 
 import (
-	"HeyFileGo/global/models"
+	"github.com/Mmx233/HeyFileGo/v2/global/models"
+	"github.com/alecthomas/kingpin/v2"
 )
 
 var Commands models.Commands

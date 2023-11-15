@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"HeyFileGo/frontend"
-	"HeyFileGo/global"
-	"fmt"
+	"github.com/Mmx233/HeyFileGo/v2/frontend"
+	"github.com/Mmx233/HeyFileGo/v2/global"
 	"github.com/Mmx233/tool"
 	"github.com/gin-gonic/gin"
 	"github.com/qingstor/go-mime"
@@ -16,8 +15,10 @@ import (
 )
 
 func ServeFile(filePath string) {
-	if !tool.File.Exists(filePath) {
-		log.Fatalln(fmt.Sprintf("error: 文件 %s 不存在", filePath))
+	if exist, err := tool.File.Exists(filePath); err != nil {
+		log.Fatalln("读取文件失败:", err)
+	} else if !exist {
+		log.Fatalf("error: 文件 %s 不存在", filePath)
 	}
 
 	mimeType := mime.DetectFilePath(filePath)
