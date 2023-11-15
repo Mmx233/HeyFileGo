@@ -72,3 +72,22 @@ func DirUpload(c *gin.Context) {
 	log.Println("文件 " + f.Filename + " 已上传到 " + c.Request.URL.RawQuery)
 	callback.Default(c)
 }
+
+func DirFileDownload(c *gin.Context) {
+	var targetPath = path.Join(config.Commands.Path, c.Request.URL.RawQuery)
+	fileState, err := os.Stat(targetPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			callback.Error(c, callback.ErrFileNotFound)
+			return
+		}
+		callback.Error(c, callback.ErrFileOperation, err)
+		return
+	}
+	if fileState.IsDir() {
+		callback.Error(c, callback.ErrNotFile)
+		return
+	}
+
+	c.File(targetPath)
+}

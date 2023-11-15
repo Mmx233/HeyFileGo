@@ -5,6 +5,8 @@ const (
 	cErrMode
 	cErrFileOperation
 	cErrNotDir
+	cErrFileNotFound
+	cErrNotFile
 )
 
 var (
@@ -25,7 +27,17 @@ var (
 	}
 	ErrNotDir = Msg{
 		Code:       cErrNotDir,
-		Msg:        "目标文件不是文件夹",
+		Msg:        "目标路径不是文件夹",
+		HttpStatus: 403,
+	}
+	ErrFileNotFound = Msg{
+		Code:       cErrFileNotFound,
+		Msg:        "文件不存在",
+		HttpStatus: 404,
+	}
+	ErrNotFile = Msg{
+		Code:       cErrNotFile,
+		Msg:        "目标路径是文件夹",
 		HttpStatus: 403,
 	}
 )
