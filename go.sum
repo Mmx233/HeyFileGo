@@ -1,5 +1,9 @@
 github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f h1:2dk3eOnYllh+wUOuDhOoC2vUVoJF/5z478ryJ+wzEII=
 github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f/go.mod h1:4a58ifQTEe2uwwsaqbh3i2un5/CBPg+At/qHpt18Tmk=
+github.com/Mmx233/Gateway/v2 v2.0.6 h1:khTMGz7kipu5OFij3+AhsVHarOY0JyswXbtUbe0Oz6o=
+github.com/Mmx233/Gateway/v2 v2.0.6/go.mod h1:ft2UJaIIPdNTBtpuF3s5GInFNVP9VIfrOZWXR0kVVns=
+github.com/Mmx233/GinWebServe v1.0.2 h1:hmplXkAGqLmDKjuswygYbLVgIQ/N7yZxDSwwWdAn/Ck=
+github.com/Mmx233/GinWebServe v1.0.2/go.mod h1:RcBanYGjxFtzQDL71R4V4ySXUdLMAXxGZpJ1BYYBnJA=
 github.com/Mmx233/tool v0.7.3 h1:a9uB8Fd7qE+sKck0lH8ZKNyc1vkb3rasXD0WUM5nuVA=
 github.com/Mmx233/tool v0.7.3/go.mod h1:pCKnFmN2yf3u58YjANsQ8261SxI/c8/0wiZhptjRsOk=
 github.com/alecthomas/kingpin/v2 v2.3.2 h1:H0aULhgmSzN8xQ3nX1uxtdlTHYoPLu5AhHxWrKI6ocU=

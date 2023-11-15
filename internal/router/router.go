@@ -13,4 +13,5 @@ func init() {
 	E.Use(gin.Recovery())
 
 	api.Init(E.Group("api"))
+	E.Use(frontendHandler())
 }
