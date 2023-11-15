@@ -56,7 +56,7 @@ func main() {
 			ethUrl := printer.EthUrl(ethList[0])
 			printer.Url(ethUrl)
 			printer.Qr(ethUrl)
-		case 2:
+		default:
 			ethUrlList := printer.EthSelect(ethList)
 			for {
 				fmt.Printf("选择网卡（序号）：\n")

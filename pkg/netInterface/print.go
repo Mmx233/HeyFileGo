@@ -33,13 +33,13 @@ func (p Printer) EthSelect(list []Eth) []*url.URL {
 	for i, eth := range list {
 		ethUrl := p.EthUrl(eth)
 		urlList[i] = ethUrl
-		fmt.Println(i, fmt.Sprintf("%s（%s）", eth.Name, ethUrl))
+		fmt.Println(i, fmt.Sprintf("%s (%s)", eth.Name, ethUrl))
 	}
 	return urlList
 }
 
 func (p Printer) Qr(ethUrl *url.URL) {
-	qrcodeTerminal.New().Get(ethUrl).Print()
+	qrcodeTerminal.New().Get(ethUrl.String()).Print()
 }
 
 func (p Printer) Url(addr *url.URL) {
