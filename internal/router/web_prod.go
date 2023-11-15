@@ -1,23 +1,26 @@
-//go:build dev
+//go:build !dev
 
 package router
 
 import (
-	gateway "github.com/Mmx233/Gateway/v2"
+	webServe "github.com/Mmx233/GinWebServe"
+	"github.com/Mmx233/HeyFileGo/v2/web"
 	"github.com/gin-gonic/gin"
 	"log"
-	"net/http"
 )
 
-func frontendHandler() gin.HandlerFunc {
-	return gateway.Proxy(&gateway.ApiConf{
-		Addr:      "localhost:5173",
-		Transport: http.DefaultTransport,
-		ErrorHandler: func(_ http.ResponseWriter, _ *http.Request, err error) {
-			log.Printf("调试页面请求转发失败: %v", err)
-		},
-		AllowRequest: func(c *gin.Context) bool {
-			return !c.Writer.Written() && c.FullPath() == ""
-		},
+func frontendHandler(mode string) gin.HandlerFunc {
+	fs, err := web.Fs()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	handler, err := webServe.NewWithInterceptor(fs, func(c *gin.Context) {
+		c.Request.URL.Fragment = mode
 	})
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return handler
 }

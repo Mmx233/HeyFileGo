@@ -12,7 +12,7 @@ require (
 
 require (
 	github.com/Mmx233/Gateway/v2 v2.0.6 // indirect
-	github.com/Mmx233/GinWebServe v1.0.2 // indirect
+	github.com/Mmx233/GinWebServe v1.0.3 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect

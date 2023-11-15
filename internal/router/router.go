@@ -5,13 +5,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var E *gin.Engine
-
-func init() {
+func Init(mode string) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
-	E = gin.New()
+	E := gin.New()
 	E.Use(gin.Recovery())
 
 	api.Init(E.Group("api"))
-	E.Use(frontendHandler())
+	E.Use(frontendHandler(mode))
+
+	return E
 }
