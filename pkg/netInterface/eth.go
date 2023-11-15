@@ -1,9 +1,7 @@
 package netInterface
 
 import (
-	"fmt"
 	"net"
-	"net/url"
 )
 
 type Eth struct {
@@ -38,20 +36,4 @@ func Load() ([]Eth, error) {
 		}
 	}
 	return list, nil
-}
-
-func PrintEth(list []Eth, ssl bool, port string) {
-	var scheme string
-	if ssl {
-		scheme = "https"
-	} else {
-		scheme = "http"
-	}
-	for i, eth := range list {
-		addr := url.URL{
-			Scheme: scheme,
-			Host:   eth.Ip + ":" + port,
-		}
-		fmt.Println(i, fmt.Sprintf("%s（%s）", eth.Name, addr.String()))
-	}
 }

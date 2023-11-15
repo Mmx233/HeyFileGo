@@ -3,11 +3,11 @@ package controllers
 import (
 	"fmt"
 	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
-	"github.com/Mmx233/HeyFileGo/v2/internal/global"
 	"log"
 	"net"
 )
 
+/*
 func genUrl(ip, port string) string {
 	var portal = "http"
 	if global.Commands.Ssl {
@@ -17,7 +17,7 @@ func genUrl(ip, port string) string {
 		return portal + "://" + ip
 	}
 	return portal + "://" + ip + ":" + port
-}
+}*/
 
 func SelectEthToQr(port string) {
 	eth, e := net.Interfaces()
