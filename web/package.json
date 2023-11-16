@@ -14,9 +14,11 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.18",
+    "add": "^2.0.6",
     "axios": "^1.6.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
