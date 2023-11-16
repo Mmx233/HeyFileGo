@@ -5,6 +5,7 @@ import { Collapse, List } from "@mui/material";
 
 interface Props {
   in?: boolean;
+  pl?: number;
   path?: string;
   content: Dir.Info[];
   disableAnimation?: boolean;
@@ -12,6 +13,7 @@ interface Props {
 
 const FolderView: FC<Props> = ({
   in: display = true,
+  pl,
   path = "",
   content,
   disableAnimation,
@@ -24,7 +26,7 @@ const FolderView: FC<Props> = ({
 
   return (
     <Collapse in={display} enter={disableAnimation}>
-      <List>{listItems}</List>
+      <List sx={{ pl }}>{listItems}</List>
     </Collapse>
   );
 };
