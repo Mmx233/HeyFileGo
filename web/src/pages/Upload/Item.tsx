@@ -1,4 +1,5 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
+import { api } from "@/network/api.ts";
 import { sizeFmt } from "@/utils/fmt.ts";
 
 import {
@@ -11,13 +12,54 @@ import {
   CircularProgressProps,
   Box,
 } from "@mui/material";
+import { HighlightOff, CheckCircleOutline } from "@mui/icons-material";
 
 interface Props {
   file: File;
 }
 
 export const Item: FC<Props> = ({ file }) => {
-  useEffect(() => {}, []);
+  const [uploadErr, setUploadErr] = useState<string | null>(null);
+  const [isUploadSuccess, setIsUploadSuccess] = useState(false);
+
+  const onUpload = async () => {
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      await api.post("upload", form, {
+        onUploadProgress: (ev) => {
+          console.log(ev);
+        },
+      });
+      setIsUploadSuccess(true);
+    } catch (err: any) {
+      if (err.response?.data?.msg) setUploadErr(err.response.data.msg);
+      else {
+        console.log(err);
+        setUploadErr("未知错误");
+      }
+    }
+  };
+
+  useEffect(() => {
+    onUpload();
+  }, []);
+
+  const renderStatus = () => {
+    if (isUploadSuccess)
+      return <CheckCircleOutline fontSize={"small"} color={"success"} />;
+    if (uploadErr)
+      return (
+        <>
+          <HighlightOff fontSize={"small"} color={"error"} />
+          <Typography ml={0.5} variant={"body2"} color={"text.secondary"}>
+            {uploadErr}
+          </Typography>
+        </>
+      );
+    return <CircularProgressWithLabel size={30} value={50} />;
+  };
+
   return (
     <Fade in>
       <TableRow>
@@ -25,8 +67,8 @@ export const Item: FC<Props> = ({ file }) => {
         <TableCell>{`大小: ${sizeFmt(file.size)}`}</TableCell>
         <TableCell sx={{ padding: "unset", minWidth: "7rem" }}>
           <Stack flexDirection={"row"} alignItems={"center"}>
-            <Typography mr={1.5}>状态:</Typography>
-            <CircularProgressWithLabel size={30} value={50} />
+            <Typography mr={1}>状态:</Typography>
+            {renderStatus()}
           </Stack>
         </TableCell>
       </TableRow>
