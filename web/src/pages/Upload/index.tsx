@@ -1,6 +1,6 @@
 import { FC, useState, useRef, useMemo, DragEvent } from "react";
 
-import Item from "./Item.tsx";
+import Item from "./Item";
 import { Stack, Typography, Paper, Table, TableBody } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 

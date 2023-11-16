@@ -2,7 +2,7 @@ import { FC, useEffect, useState, useRef } from "react";
 import { api } from "@/network/api.ts";
 import { sizeFmt } from "@/utils/fmt.ts";
 
-import CircularProgressWithLabel from "./CircularProgressWithLabel.tsx";
+import CircularProgressWithLabel from "@/components/CircularProgressWithLabel";
 import {
   TableRow,
   TableCell,

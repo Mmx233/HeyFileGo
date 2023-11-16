@@ -1,11 +1,18 @@
-import Upload from "./pages/Upload";
+import { lazy } from "react";
+import Suspense from "@/components/Suspense";
+
+const Upload = lazy(() => import("./pages/Upload"));
 
 function App() {
   const mode = location.search.substring(1);
 
   switch (mode) {
     case "upload":
-      return <Upload />;
+      return (
+        <Suspense>
+          <Upload />
+        </Suspense>
+      );
     case "file":
       break;
     case "dir":
