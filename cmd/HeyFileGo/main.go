@@ -62,7 +62,7 @@ func main() {
 		default:
 			ethUrlList := printer.EthSelect(ethList)
 			for {
-				fmt.Printf("选择网卡（序号）：\n")
+				fmt.Printf("选择网卡二维码（序号）：\n")
 				var n int
 				_, err := fmt.Scanln(&n)
 				if err != nil {
