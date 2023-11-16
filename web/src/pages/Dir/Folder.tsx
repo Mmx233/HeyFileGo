@@ -14,6 +14,7 @@ import {
   ExpandLess,
   ExpandMore,
   Folder as FolderIcon,
+  FolderOpen,
 } from "@mui/icons-material";
 
 interface Props {
@@ -57,9 +58,7 @@ export const Folder: FC<Props> = ({ path, name }) => {
       <ListItemButton
         onClick={() => (content ? setExpand(!expand) : onLoadContent())}
       >
-        <ListItemIcon>
-          <FolderIcon />
-        </ListItemIcon>
+        <ListItemIcon>{expand ? <FolderOpen /> : <FolderIcon />}</ListItemIcon>
         <ListItemText primary={name} />
         {expand ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
