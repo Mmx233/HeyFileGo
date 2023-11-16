@@ -3,7 +3,7 @@ import api from "@/network/api.ts";
 
 import LoadingFullContainer from "@/components/LoadingFullContainer.tsx";
 import FolderView from "./FolderView.tsx";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Container } from "@mui/material";
 
 const Dir: FC = () => {
   const [rootContent, setRootContent] = useState<Dir.Info[] | null>(null);
@@ -44,7 +44,9 @@ const Dir: FC = () => {
           <LoadingFullContainer />
         )
       ) : (
-        <FolderView content={rootContent} disableAnimation />
+        <Container sx={{py: 1.5}}>
+          <FolderView content={rootContent} disableAnimation />
+        </Container>
       )}
     </Box>
   );
