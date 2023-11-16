@@ -1,5 +1,5 @@
 @echo off
 cd web
-pnpm run build
+call pnpm run build
 cd ..
-release ./cmd/code --os=windows,linux,darwin"
+release ./cmd/HeyFileGo --os="windows,linux,darwin"
