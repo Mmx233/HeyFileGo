@@ -2,15 +2,13 @@ import { FC, useEffect, useState, useRef } from "react";
 import { api } from "@/network/api.ts";
 import { sizeFmt } from "@/utils/fmt.ts";
 
+import CircularProgressWithLabel from "./CircularProgressWithLabel.tsx";
 import {
   TableRow,
   TableCell,
   Fade,
   Stack,
   Typography,
-  CircularProgress,
-  CircularProgressProps,
-  Box,
   IconButton,
 } from "@mui/material";
 import { HighlightOff, CheckCircleOutline, Clear } from "@mui/icons-material";
@@ -125,32 +123,3 @@ export const Item: FC<Props> = ({ file }) => {
   );
 };
 export default Item;
-
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
-  return (
-    <Box sx={{ position: "relative", display: "inline-flex" }}>
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: "absolute",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography
-          variant="caption"
-          component="div"
-          color="text.secondary"
-          fontSize={"12px"}
-        >{`${Math.round(props.value)}`}</Typography>
-      </Box>
-    </Box>
-  );
-}
