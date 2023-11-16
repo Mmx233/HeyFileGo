@@ -1,22 +1,36 @@
-import { FC, useState } from "react";
+import { FC, useState, DragEvent } from "react";
 import { Stack, Typography, Paper, Fade } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 
 export const Upload: FC = () => {
   const [dragActive, setDragActive] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+
+  const onDrag = (ev: DragEvent) => {
+    if (ev.dataTransfer?.items) {
+      let files: Array<File> = [];
+      [...ev.dataTransfer.items].forEach((item) => {
+        if (item.kind === "file") {
+          const file = item.getAsFile();
+          if (file) files.push(file);
+        }
+      });
+      if (files.length > 0) setFiles((rawFiles) => [...rawFiles, ...files]);
+    }
+  };
 
   return (
     <Stack>
       <Stack
         width={"100%"}
         alignItems={"center"}
-        py={6}
+        py={9}
         component={Paper}
         elevation={1}
         onDrop={(e) => {
           e.preventDefault();
-          // handler
-          setDragActive(false)
+          onDrag(e);
+          setDragActive(false);
         }}
         onDragOver={(e) => {
           e.preventDefault();
