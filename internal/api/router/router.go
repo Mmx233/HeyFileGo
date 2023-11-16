@@ -19,6 +19,5 @@ func Init(G *gin.RouterGroup) {
 		middlewares.UnescapeQuery,
 	)
 	dir.GET("/", controllers.DirContent)
-	dir.POST("/", controllers.DirUpload)
 	dir.GET("file", controllers.DirFileDownload)
 }
