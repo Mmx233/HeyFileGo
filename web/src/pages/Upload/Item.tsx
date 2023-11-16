@@ -11,8 +11,9 @@ import {
   CircularProgress,
   CircularProgressProps,
   Box,
+  IconButton,
 } from "@mui/material";
-import { HighlightOff, CheckCircleOutline } from "@mui/icons-material";
+import { HighlightOff, CheckCircleOutline, Clear } from "@mui/icons-material";
 
 interface Props {
   file: File;
@@ -70,7 +71,23 @@ export const Item: FC<Props> = ({ file }) => {
           </Typography>
         </>
       );
-    return <CircularProgressWithLabel size={30} value={process} />;
+    return (
+      <>
+        <CircularProgressWithLabel size={30} value={process} />
+        <IconButton
+          size={"small"}
+          sx={{
+            transition: "color 0.15s",
+            "&:hover": {
+              color: "error.main",
+            },
+          }}
+          onClick={() => abortController.current.abort()}
+        >
+          <Clear fontSize={"small"} />
+        </IconButton>
+      </>
+    );
   };
 
   return (
@@ -78,7 +95,7 @@ export const Item: FC<Props> = ({ file }) => {
       <TableRow>
         <TableCell>{`名称: ${file.name}`}</TableCell>
         <TableCell>{`大小: ${sizeFmt(file.size)}`}</TableCell>
-        <TableCell sx={{ padding: "unset", minWidth: "7rem" }}>
+        <TableCell sx={{ padding: "unset", minWidth: "9rem" }}>
           <Stack flexDirection={"row"} alignItems={"center"}>
             <Typography mr={1}>状态:</Typography>
             {renderStatus()}
