@@ -1,13 +1,7 @@
 import { FC, useState, useRef, useMemo, DragEvent } from "react";
 
 import Item from "./Item.tsx";
-import {
-  Stack,
-  Typography,
-  Paper,
-  Table,
-  TableBody,
-} from "@mui/material";
+import { Stack, Typography, Paper, Table, TableBody } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 
 export const Upload: FC = () => {
@@ -17,9 +11,10 @@ export const Upload: FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const onBrowserFile = () => {
-    if (inputRef.current?.files) {
+    if (inputRef.current?.files && inputRef.current.files.length > 0) {
       const fileList = [...inputRef.current.files];
       setFiles((rawFiles) => [...rawFiles, ...fileList]);
+      inputRef.current.value = "";
     }
   };
   const onDrag = (ev: DragEvent) => {
