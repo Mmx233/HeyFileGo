@@ -54,7 +54,9 @@ export const Folder: FC<Props> = ({ path, name }) => {
 
   return (
     <>
-      <ListItemButton onClick={()=>content?setExpand(!expand):onLoadContent()}>
+      <ListItemButton
+        onClick={() => (content ? setExpand(!expand) : onLoadContent())}
+      >
         <ListItemIcon>
           <FolderIcon />
         </ListItemIcon>
@@ -65,7 +67,13 @@ export const Folder: FC<Props> = ({ path, name }) => {
         <LinearProgress />
       </Collapse>
       {content ? (
-        <FolderView in={expand} pl={1.5} path={path + "/" + name} content={content} />
+        <FolderView
+          in={expand}
+          ml={3.3}
+          border
+          path={path + "/" + name}
+          content={content}
+        />
       ) : undefined}
     </>
   );
