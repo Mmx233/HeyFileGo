@@ -7,9 +7,10 @@ import (
 	"github.com/Mmx233/HeyFileGo/v2/internal/router"
 	"github.com/Mmx233/HeyFileGo/v2/pkg/cert"
 	"github.com/Mmx233/HeyFileGo/v2/pkg/netInterface"
-	"log"
+	"log/slog"
 	"net"
 	"net/http"
+	"os"
 )
 
 func apiServer(listener net.Listener) {
@@ -32,26 +33,28 @@ func apiServer(listener net.Listener) {
 		err = http.Serve(listener, engine)
 	}
 	if err != nil {
-		log.Fatalln("error: 启动 http 服务失败：", err)
+		slog.Error("启动 http 服务失败", "err", err)
+		os.Exit(1)
 	}
 }
 
 func main() {
 	listener, err := net.Listen("tcp", ":"+fmt.Sprint(config.Commands.Port))
 	if err != nil {
-		log.Fatalln("error: 监听失败：", err)
+		slog.Error("启动 http 监听失败", "err", err)
+		os.Exit(1)
 	}
 
 	go apiServer(listener)
 
 	ethList, err := netInterface.Load()
 	if err != nil {
-		log.Println("获取网卡信息失败:", err)
+		slog.Info("获取网卡信息失败", "err", err)
 	} else {
 		printer := netInterface.NewPrinter(config.Commands.Ssl, fmt.Sprint(listener.Addr().(*net.TCPAddr).Port))
 		switch len(ethList) {
 		case 0:
-			fmt.Println("没有找到可用网卡！")
+			slog.Warn("没有找到可用网卡！")
 		case 1:
 			ethUrl := printer.EthUrl(ethList[0])
 			printer.Url(ethUrl)
@@ -63,11 +66,11 @@ func main() {
 				var n int
 				_, err := fmt.Scanln(&n)
 				if err != nil {
-					log.Println("读取输入异常：", err)
+					slog.Error("读取输入异常", "err", err)
 					continue
 				}
 				if len(ethList) <= n || n < 0 {
-					log.Println("warning: 序号不正确：", err)
+					slog.Error("序号不正确", "err", err)
 					continue
 				}
 				ethUrl := ethUrlList[n]

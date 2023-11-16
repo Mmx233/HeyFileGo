@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"log/slog"
 	"os"
 )
 
@@ -15,12 +15,14 @@ func initServer() {
 	} else {
 		rootFile, err := os.OpenFile(Commands.Path, os.O_RDONLY, 0600)
 		if err != nil {
-			log.Fatalln("读取目标路径失败:", err)
+			slog.Error("读取目标路径失败", "err", err)
+			os.Exit(1)
 		}
 		defer rootFile.Close()
 		FileInfo, err = rootFile.Stat()
 		if err != nil {
-			log.Fatalln("读取路径信息失败:", err)
+			slog.Error("读取路径信息失败", "err", err)
+			os.Exit(1)
 		}
 		if FileInfo.IsDir() {
 			Mode = ModeDir

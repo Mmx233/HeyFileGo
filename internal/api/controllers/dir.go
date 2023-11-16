@@ -4,7 +4,7 @@ import (
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
 	"github.com/Mmx233/HeyFileGo/v2/internal/config"
 	"github.com/gin-gonic/gin"
-	"log"
+	"log/slog"
 	"os"
 	"path"
 )
@@ -69,7 +69,7 @@ func DirUpload(c *gin.Context) {
 		return
 	}
 
-	log.Println("文件 " + f.Filename + " 已上传到 " + c.Request.URL.RawQuery)
+	slog.Info("文件 " + f.Filename + " 已上传到 " + c.Request.URL.RawQuery)
 	callback.Default(c)
 }
 

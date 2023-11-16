@@ -3,7 +3,7 @@ package callback
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
+	"log/slog"
 )
 
 type Msg struct {
@@ -17,7 +17,7 @@ func Error(c *gin.Context, msg Msg, args ...any) {
 	for _, arg := range args {
 		msg.Msg += ": " + fmt.Sprint(arg)
 	}
-	log.Println(msg.Msg)
+	slog.Error(msg.Msg)
 	c.JSON(msg.HttpStatus, msg)
 	c.Abort()
 }

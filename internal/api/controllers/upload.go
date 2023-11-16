@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
 	"github.com/gin-gonic/gin"
-	"log"
+	"log/slog"
 	"strings"
 )
 
@@ -25,6 +25,6 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	log.Println("文件 " + f.Filename + " 已保存")
+	slog.Info("文件 " + f.Filename + " 已保存")
 	callback.Default(c)
 }
