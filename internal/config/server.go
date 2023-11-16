@@ -26,9 +26,12 @@ func initServer() {
 		}
 		if FileInfo.IsDir() {
 			Mode = ModeDir
+		} else {
 			Mode = ModeFile
 		}
 	}
+
+	slog.Info("运行模式: " + Mode)
 }
 
 const (
