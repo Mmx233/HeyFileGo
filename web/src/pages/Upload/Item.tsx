@@ -23,9 +23,11 @@ export const Item: FC<Props> = ({ file }) => {
   const [uploadErr, setUploadErr] = useState<string | null>(null);
   const [isUploadSuccess, setIsUploadSuccess] = useState(false);
   const [process, setProcess] = useState(0);
+  const [uploadSpeed, setUploadSpeed] = useState(0);
 
   const abortController = useRef(new AbortController());
   const uploadConcurrent = useRef(false);
+  const uploadStartAt = useRef(0);
 
   const onUpload = async () => {
     if (uploadConcurrent.current) return;
@@ -33,10 +35,14 @@ export const Item: FC<Props> = ({ file }) => {
     try {
       const form = new FormData();
       form.append("file", file);
+      uploadStartAt.current = Date.now();
       await api.post("upload", form, {
         signal: abortController.current.signal,
         onUploadProgress: (ev) => {
           setProcess((ev.loaded / ev.total!) * 100);
+          setUploadSpeed(
+            ev.loaded / ((Date.now() - uploadStartAt.current) / 1000),
+          );
         },
       });
       setIsUploadSuccess(true);
@@ -73,7 +79,10 @@ export const Item: FC<Props> = ({ file }) => {
       );
     return (
       <>
-        <CircularProgressWithLabel size={30} value={process} />
+        <CircularProgressWithLabel size={30} value={process} color={'success'} />
+        <Typography variant={"body2"} ml={1.5} mr={0.5}>
+          {uploadSpeed === 0 ? "--" : sizeFmt(uploadSpeed, 1) + "/s"}
+        </Typography>
         <IconButton
           size={"small"}
           sx={{
@@ -95,7 +104,7 @@ export const Item: FC<Props> = ({ file }) => {
       <TableRow>
         <TableCell>{`名称: ${file.name}`}</TableCell>
         <TableCell>{`大小: ${sizeFmt(file.size)}`}</TableCell>
-        <TableCell sx={{ padding: "unset", minWidth: "9rem" }}>
+        <TableCell sx={{ padding: "unset", minWidth: "12rem" }}>
           <Stack flexDirection={"row"} alignItems={"center"}>
             <Typography mr={1}>状态:</Typography>
             {renderStatus()}

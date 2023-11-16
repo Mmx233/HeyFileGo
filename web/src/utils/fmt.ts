@@ -1,4 +1,4 @@
-export function sizeFmt(bytes:number) {
+export function sizeFmt(bytes:number, fixed:number = 2):string {
     const symbols = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     let exp = Math.floor(Math.log(bytes) / Math.log(2));
     if (exp < 1) {
@@ -8,8 +8,8 @@ export function sizeFmt(bytes:number) {
     bytes = bytes / Math.pow(2, 10 * i);
 
     let bytesStr:string
-    if (bytes.toString().length > bytes.toFixed(2).toString().length) {
-        bytesStr = bytes.toFixed(2);
+    if (bytes.toString().length > bytes.toFixed(fixed).toString().length) {
+        bytesStr = bytes.toFixed(fixed);
     } else {
         bytesStr = bytes.toString()
     }
