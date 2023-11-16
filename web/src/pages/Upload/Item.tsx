@@ -21,6 +21,7 @@ interface Props {
 export const Item: FC<Props> = ({ file }) => {
   const [uploadErr, setUploadErr] = useState<string | null>(null);
   const [isUploadSuccess, setIsUploadSuccess] = useState(false);
+  const [process, setProcess] = useState(0);
 
   const onUpload = async () => {
     try {
@@ -28,7 +29,7 @@ export const Item: FC<Props> = ({ file }) => {
       form.append("file", file);
       await api.post("upload", form, {
         onUploadProgress: (ev) => {
-          console.log(ev);
+          setProcess((ev.loaded / ev.total!) * 100);
         },
       });
       setIsUploadSuccess(true);
@@ -57,7 +58,7 @@ export const Item: FC<Props> = ({ file }) => {
           </Typography>
         </>
       );
-    return <CircularProgressWithLabel size={30} value={50} />;
+    return <CircularProgressWithLabel size={30} value={process} />;
   };
 
   return (
