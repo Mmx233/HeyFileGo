@@ -1,5 +1,13 @@
-import { FC, useState, useRef, DragEvent } from "react";
-import { Stack, Typography, Paper } from "@mui/material";
+import { FC, useState, useRef, useMemo, DragEvent } from "react";
+
+import Item from "./Item.tsx";
+import {
+  Stack,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+} from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 
 export const Upload: FC = () => {
@@ -26,6 +34,11 @@ export const Upload: FC = () => {
       if (files.length > 0) setFiles((rawFiles) => [...rawFiles, ...files]);
     }
   };
+
+  const items = useMemo(
+    () => files.map((file, i) => <Item key={i} file={file} />),
+    [files],
+  );
 
   return (
     <Stack>
@@ -62,6 +75,10 @@ export const Upload: FC = () => {
           onChange={onBrowserFile}
         />
       </Stack>
+
+      <Table>
+        <TableBody>{items}</TableBody>
+      </Table>
     </Stack>
   );
 };
