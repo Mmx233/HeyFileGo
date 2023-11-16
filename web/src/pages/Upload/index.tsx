@@ -1,11 +1,19 @@
-import { FC, useState, DragEvent } from "react";
-import { Stack, Typography, Paper, Fade } from "@mui/material";
+import { FC, useState, useRef, DragEvent } from "react";
+import { Stack, Typography, Paper } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 
 export const Upload: FC = () => {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
 
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const onBrowserFile = () => {
+    if (inputRef.current?.files) {
+      const fileList = [...inputRef.current.files];
+      setFiles((rawFiles) => [...rawFiles, ...fileList]);
+    }
+  };
   const onDrag = (ev: DragEvent) => {
     if (ev.dataTransfer?.items) {
       let files: Array<File> = [];
@@ -27,6 +35,7 @@ export const Upload: FC = () => {
         py={9}
         component={Paper}
         elevation={1}
+        onClick={() => inputRef.current?.click()}
         onDrop={(e) => {
           e.preventDefault();
           onDrag(e);
@@ -45,6 +54,13 @@ export const Upload: FC = () => {
       >
         <UploadFile color={"primary"} sx={{ fontSize: "4rem" }} />
         <Typography mt={1.5}>点击上传或将文件拖拽到此区域</Typography>
+        <input
+          ref={inputRef}
+          type={"file"}
+          multiple
+          style={{ display: "none" }}
+          onChange={onBrowserFile}
+        />
       </Stack>
     </Stack>
   );
