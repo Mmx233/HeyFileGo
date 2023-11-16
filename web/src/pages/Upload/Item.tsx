@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 import { api } from "@/network/api.ts";
 import { sizeFmt } from "@/utils/fmt.ts";
 
@@ -23,11 +23,17 @@ export const Item: FC<Props> = ({ file }) => {
   const [isUploadSuccess, setIsUploadSuccess] = useState(false);
   const [process, setProcess] = useState(0);
 
+  const abortController = useRef(new AbortController());
+  const uploadConcurrent = useRef(false);
+
   const onUpload = async () => {
+    if (uploadConcurrent.current) return;
+    uploadConcurrent.current = true;
     try {
       const form = new FormData();
       form.append("file", file);
       await api.post("upload", form, {
+        signal: abortController.current.signal,
         onUploadProgress: (ev) => {
           setProcess((ev.loaded / ev.total!) * 100);
         },
@@ -37,7 +43,13 @@ export const Item: FC<Props> = ({ file }) => {
       if (err.response?.data?.msg) setUploadErr(err.response.data.msg);
       else {
         console.log(err);
-        setUploadErr("未知错误");
+        switch (err.code) {
+          case "ERR_CANCELED":
+            setUploadErr("用户取消");
+            break;
+          default:
+            setUploadErr("未知错误");
+        }
       }
     }
   };
