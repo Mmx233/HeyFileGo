@@ -1,7 +1,9 @@
 import { lazy } from "react";
+
 import Suspense from "@/components/Suspense";
 
 const Upload = lazy(() => import("./pages/Upload"));
+const File = lazy(() => import("./pages/File"));
 
 function App() {
   const mode = location.search.substring(1);
@@ -14,7 +16,11 @@ function App() {
         </Suspense>
       );
     case "file":
-      break;
+      return (
+        <Suspense>
+          <File />
+        </Suspense>
+      );
     case "dir":
       break;
     default:
