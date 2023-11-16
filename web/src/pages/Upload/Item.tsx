@@ -78,11 +78,21 @@ export const Item: FC<Props> = ({ file }) => {
         </>
       );
     return (
-      <>
-        <CircularProgressWithLabel size={30} value={process} color={'success'} />
-        <Typography variant={"body2"} ml={1.5} mr={0.5}>
-          {uploadSpeed === 0 ? "--" : sizeFmt(uploadSpeed, 1) + "/s"}
-        </Typography>
+      <Stack
+        flexDirection={"row"}
+        alignItems={"center"}
+        flexGrow={1}
+        justifyContent={"space-between"}
+        boxSizing={"border-box"}
+        pr={1}
+        maxWidth={"15rem"}
+      >
+        <Stack flexDirection={"row"} alignItems={"center"}>
+          <CircularProgressWithLabel size={30} value={process} color={"info"} />
+          <Typography variant={"body2"} ml={1.5}>
+            {uploadSpeed === 0 ? "--" : sizeFmt(uploadSpeed, 0) + "/s"}
+          </Typography>
+        </Stack>
         <IconButton
           size={"small"}
           sx={{
@@ -95,7 +105,7 @@ export const Item: FC<Props> = ({ file }) => {
         >
           <Clear fontSize={"small"} />
         </IconButton>
-      </>
+      </Stack>
     );
   };
 
@@ -104,7 +114,7 @@ export const Item: FC<Props> = ({ file }) => {
       <TableRow>
         <TableCell>{`名称: ${file.name}`}</TableCell>
         <TableCell>{`大小: ${sizeFmt(file.size)}`}</TableCell>
-        <TableCell sx={{ padding: "unset", minWidth: "12rem" }}>
+        <TableCell sx={{ padding: "unset", minWidth: "11.5rem" }}>
           <Stack flexDirection={"row"} alignItems={"center"}>
             <Typography mr={1}>状态:</Typography>
             {renderStatus()}
