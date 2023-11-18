@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { memo, useRef } from "react";
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { InsertDriveFile } from "@mui/icons-material";
 import { sizeFmt } from "@/utils/fmt.ts";
@@ -9,7 +9,7 @@ interface Props {
   size?: number;
 }
 
-export const File: FC<Props> = ({ path, name, size=0 }) => {
+export const File = memo<Props>(({ path, name, size = 0 }) => {
   const downloaderRef = useRef<HTMLAnchorElement | null>(null);
 
   return (
@@ -29,5 +29,5 @@ export const File: FC<Props> = ({ path, name, size=0 }) => {
       />
     </ListItemButton>
   );
-};
+});
 export default File;

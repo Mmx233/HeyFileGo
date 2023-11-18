@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { memo, useEffect, useState, useTransition } from "react";
 import api from "@/network/api.ts";
 import toast from "react-hot-toast";
 
@@ -20,9 +20,13 @@ import {
 interface Props {
   path: string;
   name: string;
+
+  parentFolderExpand?: boolean;
 }
 
-export const Folder: FC<Props> = ({ path, name }) => {
+export const Folder = memo<Props>(({ path, name, parentFolderExpand }) => {
+  const [, startTransition] = useTransition();
+
   const [expand, setExpand] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -52,6 +56,11 @@ export const Folder: FC<Props> = ({ path, name }) => {
   useEffect(() => {
     if (content) setExpand(true);
   }, [content]);
+  useEffect(() => {
+    if (parentFolderExpand === false && expand) {
+      startTransition(() => setExpand(false));
+    }
+  }, [parentFolderExpand]);
 
   return (
     <>
@@ -72,9 +81,10 @@ export const Folder: FC<Props> = ({ path, name }) => {
           border
           path={path + "/" + name}
           content={content}
+          parentFolderExpand={expand}
         />
       ) : undefined}
     </>
   );
-};
+});
 export default Folder;

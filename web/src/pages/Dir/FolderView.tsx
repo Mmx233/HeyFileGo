@@ -9,7 +9,9 @@ interface Props {
   border?: boolean;
   path?: string;
   content: Dir.Info[];
+
   disableAnimation?: boolean;
+  parentFolderExpand?: boolean;
 }
 
 const FolderView: FC<Props> = ({
@@ -19,6 +21,7 @@ const FolderView: FC<Props> = ({
   path = "",
   content,
   disableAnimation,
+  parentFolderExpand,
 }) => {
   return (
     <Collapse in={display} enter={disableAnimation}>
@@ -31,7 +34,12 @@ const FolderView: FC<Props> = ({
         }}
       >
         {content.map((dir) => (
-          <FolderItem key={dir.name} path={path} {...dir} />
+          <FolderItem
+            key={dir.name}
+            path={path}
+            parentFolderExpand={parentFolderExpand}
+            {...dir}
+          />
         ))}
       </List>
     </Collapse>
