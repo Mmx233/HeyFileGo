@@ -85,7 +85,7 @@ export const Item: FC<Props> = ({ file }) => {
         pr={1}
         maxWidth={"15rem"}
       >
-        <Stack flexDirection={"row"} alignItems={"center"}>
+        <Stack direction={"row"} alignItems={"center"}>
           <CircularProgressWithLabel size={30} value={process} color={"info"} />
           <Typography variant={"body2"} ml={1.5}>
             {uploadSpeed === 0 ? "--" : sizeFmt(uploadSpeed, 0) + "/s"}

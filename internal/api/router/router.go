@@ -16,7 +16,7 @@ func Init(G *gin.RouterGroup) {
 
 	dir := G.Group("dir",
 		middlewares.MustMode(config.ModeDir),
-		middlewares.UnescapeQuery,
+		middlewares.DecodeQuery,
 	)
 	dir.GET("/", controllers.DirContent)
 	dir.GET("file", controllers.DirFileDownload)
