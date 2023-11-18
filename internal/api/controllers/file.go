@@ -7,7 +7,7 @@ import (
 )
 
 func DownloadFile(c *gin.Context) {
-	c.File(config.Commands.Path)
+	c.FileAttachment(config.Commands.Path, config.FileInfo.Name())
 }
 
 func FileInfo(c *gin.Context) {

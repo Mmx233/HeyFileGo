@@ -89,5 +89,5 @@ func DirFileDownload(c *gin.Context) {
 		return
 	}
 
-	c.File(targetPath)
+	c.FileAttachment(targetPath, fileState.Name())
 }
