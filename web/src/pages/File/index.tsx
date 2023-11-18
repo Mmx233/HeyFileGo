@@ -3,7 +3,7 @@ import { sizeFmt } from "@/utils/fmt.ts";
 import toast from "react-hot-toast";
 import api from "@/network/api.ts";
 
-import { Stack, Paper, Typography, Skeleton } from "@mui/material";
+import { Stack, Paper, Typography, Skeleton, Chip } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { FolderZip, FileDownload } from "@mui/icons-material";
 
@@ -37,7 +37,7 @@ const File: FC = () => {
     downloaderRef.current?.click();
   };
 
-  useEffect(() => {
+   useEffect(() => {
     if (fileInfo) onDownload();
   }, [fileInfo]);
   useEffect(() => {
@@ -53,18 +53,26 @@ const File: FC = () => {
       justifyContent={"center"}
       alignItems={"center"}
     >
-      <Stack spacing={0.5} alignItems={"center"}>
-        <FolderZip sx={{ fontSize: "4rem" }} />
-        <Typography variant={"h6"}>
+      <Stack alignItems={"center"}>
+        <FolderZip sx={{ fontSize: "5.5rem" }} />
+
+        <Typography variant={"h6"} my={1} px={2}>
           {fileInfo ? fileInfo.name : <Skeleton width={180} />}
         </Typography>
-        <Typography>
-          {fileInfo ? sizeFmt(fileInfo.size) : <Skeleton width={70} />}
-        </Typography>
+        {fileInfo ? (
+          <Chip
+            size={"small"}
+            label={sizeFmt(fileInfo.size)}
+            color={"secondary"}
+          />
+        ) : (
+          <Skeleton variant={"rounded"} height={24} width={75} />
+        )}
+
         <LoadingButton
           variant={"contained"}
           startIcon={<FileDownload />}
-          sx={{ marginTop: "1rem!important" }}
+          sx={{ marginTop: "3rem" }}
           loading={!fileInfo}
           disabled={disableDownload}
           onClick={onDownload}
