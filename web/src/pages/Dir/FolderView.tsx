@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC } from "react";
 
 import FolderItem from "./FolderItem.tsx";
 import { Collapse, List } from "@mui/material";
@@ -20,12 +20,6 @@ const FolderView: FC<Props> = ({
   content,
   disableAnimation,
 }) => {
-  const listItems = useMemo(
-    () =>
-      content.map((dir) => <FolderItem key={dir.name} path={path} {...dir} />),
-    [content],
-  );
-
   return (
     <Collapse in={display} enter={disableAnimation}>
       <List
@@ -33,10 +27,12 @@ const FolderView: FC<Props> = ({
           ml,
           boxSizing: "border-box",
           borderLeftStyle: border ? "dotted" : undefined,
-          borderColor: 'grey.700'
+          borderColor: "grey.700",
         }}
       >
-        {listItems}
+        {content.map((dir) => (
+          <FolderItem key={dir.name} path={path} {...dir} />
+        ))}
       </List>
     </Collapse>
   );
