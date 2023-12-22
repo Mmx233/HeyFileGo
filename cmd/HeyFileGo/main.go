@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 )
 
@@ -38,6 +39,16 @@ func apiServer(listener net.Listener) {
 	}
 }
 
+func printEth(printer netInterface.Printer, ethUrl *url.URL) {
+	printer.Url(ethUrl)
+	if config.Mode == config.ModeFile {
+		downloadUrl := *ethUrl
+		downloadUrl.Path = "/api/file/"
+		printer.Wget(&downloadUrl, config.FileInfo.Name())
+	}
+	printer.Qr(ethUrl)
+}
+
 func main() {
 	listener, err := net.Listen("tcp", ":"+fmt.Sprint(config.Commands.Port))
 	if err != nil {
@@ -56,9 +67,7 @@ func main() {
 		case 0:
 			slog.Warn("没有找到可用网卡！")
 		case 1:
-			ethUrl := printer.EthUrl(ethList[0])
-			printer.Url(ethUrl)
-			printer.Qr(ethUrl)
+			printEth(printer, printer.EthUrl(ethList[0]))
 		default:
 			ethUrlList := printer.EthSelect(ethList)
 			for {
@@ -73,9 +82,7 @@ func main() {
 					slog.Error("序号不正确", "err", err)
 					continue
 				}
-				ethUrl := ethUrlList[n]
-				printer.Url(ethUrl)
-				printer.Qr(ethUrl)
+				printEth(printer, ethUrlList[n])
 			}
 		}
 	}

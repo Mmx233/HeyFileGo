@@ -4,6 +4,7 @@ import (
 	"fmt"
 	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
 	"net/url"
+	"strings"
 )
 
 func NewPrinter(ssl bool, port string) Printer {
@@ -38,10 +39,21 @@ func (p Printer) EthSelect(list []Eth) []*url.URL {
 	return urlList
 }
 
-func (p Printer) Qr(ethUrl *url.URL) {
-	qrcodeTerminal.New().Get(ethUrl.String()).Print()
+func (p Printer) Qr(addr *url.URL) {
+	qrcodeTerminal.New().Get(addr.String()).Print()
 }
 
 func (p Printer) Url(addr *url.URL) {
 	fmt.Println("URL:", addr)
+}
+
+func (p Printer) Wget(addr *url.URL, fileName string) {
+	var args = []string{
+		"wget", "-O", fmt.Sprintf("\"%s\"", fileName),
+	}
+	if addr.Scheme == "HTTPS" {
+		args = append(args, "--no-check-certificate")
+	}
+	args = append(args, addr.String())
+	fmt.Println("CMD:", strings.Join(args, " "))
 }
