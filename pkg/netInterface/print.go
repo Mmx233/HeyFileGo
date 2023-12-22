@@ -3,6 +3,7 @@ package netInterface
 import (
 	"fmt"
 	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
+	"github.com/fatih/color"
 	"net/url"
 	"strings"
 )
@@ -44,7 +45,10 @@ func (p Printer) Qr(addr *url.URL) {
 }
 
 func (p Printer) Url(addr *url.URL) {
-	fmt.Println("URL:", addr)
+	fmt.Printf("%s %s\n",
+		color.GreenString("URL:"),
+		color.HiGreenString(addr.String()),
+	)
 }
 
 func (p Printer) Wget(addr *url.URL, fileName string) {
@@ -55,5 +59,8 @@ func (p Printer) Wget(addr *url.URL, fileName string) {
 		args = append(args, "--no-check-certificate")
 	}
 	args = append(args, addr.String())
-	fmt.Println("CMD:", strings.Join(args, " "))
+	fmt.Printf("%s %s\n",
+		color.GreenString("CMD:"),
+		color.HiGreenString(strings.Join(args, " ")),
+	)
 }

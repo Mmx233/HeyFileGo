@@ -7,6 +7,7 @@ require (
 	github.com/Mmx233/Gateway/v2 v2.0.6
 	github.com/Mmx233/GinWebServe v1.0.4
 	github.com/alecthomas/kingpin/v2 v2.4.0
+	github.com/fatih/color v1.16.0
 	github.com/gin-gonic/gin v1.9.1
 )
 
