@@ -62,12 +62,12 @@ func main() {
 	if err != nil {
 		slog.Info("获取网卡信息失败", "err", err)
 	} else {
-		printer := netInterface.NewPrinter(config.Commands.Ssl, fmt.Sprint(listener.Addr().(*net.TCPAddr).Port))
+		printer := netInterface.NewPrinter().WithEth(config.Commands.Ssl, fmt.Sprint(listener.Addr().(*net.TCPAddr).Port))
 		switch len(ethList) {
 		case 0:
 			slog.Warn("没有找到可用网卡！")
 		case 1:
-			printEth(printer, printer.EthUrl(ethList[0]))
+			printEth(printer.Printer, printer.EthUrl(ethList[0]))
 		default:
 			ethUrlList := printer.EthSelect(ethList)
 			for {
@@ -82,7 +82,7 @@ func main() {
 					slog.Error("序号不正确", "err", err)
 					continue
 				}
-				printEth(printer, ethUrlList[n])
+				printEth(printer.Printer, ethUrlList[n])
 			}
 		}
 	}
