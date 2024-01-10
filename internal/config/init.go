@@ -1,6 +1,6 @@
 package config
 
-func init() {
-	initCommands()
+func Init(Version string) {
+	initCommands(Version)
 	initServer()
 }

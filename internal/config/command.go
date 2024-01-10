@@ -12,8 +12,10 @@ var Commands struct {
 	Path string
 }
 
-func initCommands() {
+func initCommands(Version string) {
 	Commands.App = kingpin.New("HeyFileGo", "A lightweight file transfer tool.")
+	Commands.App.Version(Version)
+	Commands.App.VersionFlag.Short('v')
 	Commands.App.HelpFlag.Short('h')
 	Commands.App.Flag("ssl", "Enable tls for transfer.").Short('s').BoolVar(&Commands.Ssl)
 	Commands.App.Flag("port", "Specify port.").Short('p').UintVar(&Commands.Port)

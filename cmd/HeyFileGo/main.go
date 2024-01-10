@@ -14,6 +14,12 @@ import (
 	"os"
 )
 
+var Version = "unknown"
+
+func init() {
+	config.Init(Version)
+}
+
 func apiServer(listener net.Listener) {
 	var err error
 	engine := router.Init()
@@ -63,6 +69,7 @@ func main() {
 		slog.Info("获取网卡信息失败", "err", err)
 	} else {
 		printer := netInterface.NewPrinter().WithEth(config.Commands.Ssl, fmt.Sprint(listener.Addr().(*net.TCPAddr).Port))
+
 		switch len(ethList) {
 		case 0:
 			slog.Warn("没有找到可用网卡！")
