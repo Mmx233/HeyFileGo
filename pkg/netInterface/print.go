@@ -55,7 +55,7 @@ func (p Printer) Wget(addr *url.URL, fileName string) {
 	var args = []string{
 		"wget", "-O", fmt.Sprintf("\"%s\"", fileName),
 	}
-	if addr.Scheme == "HTTPS" {
+	if addr.Scheme == "https" {
 		args = append(args, "--no-check-certificate")
 	}
 	args = append(args, addr.String())
