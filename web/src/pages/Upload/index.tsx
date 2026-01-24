@@ -61,7 +61,7 @@ export const Upload: FC = () => {
         }}
       >
         <UploadFile color={"primary"} sx={{ fontSize: "4rem" }} />
-        <Typography mt={1.5}>点击上传或将文件拖拽到此区域</Typography>
+        <Typography mt={1.5}>Click to upload or drag files here</Typography>
         <input
           ref={inputRef}
           type={"file"}

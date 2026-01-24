@@ -20,7 +20,7 @@ const Dir: FC = () => {
       ]);
     } catch (err: any) {
       if (err.response?.data?.msg) setLoadError(err.response.data.msg);
-      else setLoadError("未知错误，请刷新重试");
+      else setLoadError("Unknown error, please refresh and try again");
     }
   };
 

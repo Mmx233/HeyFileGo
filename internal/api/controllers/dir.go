@@ -58,7 +58,7 @@ func DirContent(c *gin.Context) {
 func DirUpload(c *gin.Context) {
 	f, err := c.FormFile("file")
 	if err != nil {
-		callback.ErrorWithTip(c, callback.ErrForm, "读取表单文件失败", err)
+		callback.ErrorWithTip(c, callback.ErrForm, "Failed to read form file", err)
 		return
 	}
 
@@ -69,7 +69,7 @@ func DirUpload(c *gin.Context) {
 		return
 	}
 
-	slog.Info("文件 " + f.Filename + " 已上传到 " + c.Request.URL.RawQuery)
+	slog.Info("File " + f.Filename + " uploaded to " + c.Request.URL.RawQuery)
 	callback.Default(c)
 }
 

@@ -47,7 +47,7 @@ export const Folder = memo<Props>(({ path, name, parentFolderExpand }) => {
       ]);
     } catch (err: any) {
       if (err.response?.data?.msg) toast.error(err.response.data.msg);
-      else toast.error("载入文件夹内容失败，未知错误");
+      else toast.error("Failed to load folder content, unknown error");
       console.log(err);
     }
     setIsLoading(false);

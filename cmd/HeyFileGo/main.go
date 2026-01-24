@@ -40,7 +40,7 @@ func apiServer(listener net.Listener) {
 		err = http.Serve(listener, engine)
 	}
 	if err != nil {
-		slog.Error("启动 http 服务失败", "err", err)
+		slog.Error("Failed to start HTTP server", "err", err)
 		os.Exit(1)
 	}
 }
@@ -58,7 +58,7 @@ func printEth(printer netInterface.Printer, ethUrl *url.URL) {
 func main() {
 	listener, err := net.Listen("tcp", ":"+fmt.Sprint(config.Commands.Port))
 	if err != nil {
-		slog.Error("启动 http 监听失败", "err", err)
+		slog.Error("Failed to start HTTP listener", "err", err)
 		os.Exit(1)
 	}
 
@@ -66,27 +66,27 @@ func main() {
 
 	ethList, err := netInterface.Load()
 	if err != nil {
-		slog.Info("获取网卡信息失败", "err", err)
+		slog.Info("Failed to get network interface info", "err", err)
 	} else {
 		printer := netInterface.NewPrinter().WithEth(config.Commands.Ssl, fmt.Sprint(listener.Addr().(*net.TCPAddr).Port))
 
 		switch len(ethList) {
 		case 0:
-			slog.Warn("没有找到可用网卡！")
+			slog.Warn("No available network interface found!")
 		case 1:
 			printEth(printer.Printer, printer.EthUrl(ethList[0]))
 		default:
 			ethUrlList := printer.EthSelect(ethList)
 			for {
-				fmt.Printf("选择网卡二维码（序号）：\n")
+				fmt.Printf("Select network interface QR code (index): \n")
 				var n int
 				_, err := fmt.Scanln(&n)
 				if err != nil {
-					slog.Error("读取输入异常", "err", err)
+					slog.Error("Failed to read input", "err", err)
 					continue
 				}
 				if len(ethList) <= n || n < 0 {
-					slog.Error("序号不正确", "err", err)
+					slog.Error("Invalid index", "err", err)
 					continue
 				}
 				printEth(printer.Printer, ethUrlList[n])

@@ -29,7 +29,7 @@ function App() {
         </Suspense>
       );
     default:
-      return "运行异常，请反馈开发者";
+      return "Runtime error, please report to the developer";
   }
 }
 

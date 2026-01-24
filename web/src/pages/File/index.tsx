@@ -24,7 +24,7 @@ const File: FC = () => {
       setFileInfo(data);
     } catch (err: any) {
       if (err.response?.data?.msg) toast.error(err.response.data.msg);
-      else toast.error("载入文件信息失败，未知错误");
+      else toast.error("Failed to load file info, unknown error");
       setDisableDownload(true);
       setFileInfo({
         name: "--",
@@ -77,7 +77,7 @@ const File: FC = () => {
           disabled={disableDownload}
           onClick={onDownload}
         >
-          如果下载没有自动开始，点此重试
+          Click here if download doesn't start automatically
         </LoadingButton>
       </Stack>
 

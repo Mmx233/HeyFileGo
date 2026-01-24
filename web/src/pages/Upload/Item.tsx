@@ -50,10 +50,10 @@ export const Item: FC<Props> = ({ file }) => {
         console.log(err);
         switch (err.code) {
           case "ERR_CANCELED":
-            setUploadErr("用户取消");
+            setUploadErr("Cancelled");
             break;
           default:
-            setUploadErr("未知错误");
+            setUploadErr("Unknown error");
         }
       }
     }
@@ -110,11 +110,11 @@ export const Item: FC<Props> = ({ file }) => {
   return (
     <Fade in>
       <TableRow>
-        <TableCell>{`名称: ${file.name}`}</TableCell>
-        <TableCell>{`大小: ${sizeFmt(file.size)}`}</TableCell>
+        <TableCell>{`Name: ${file.name}`}</TableCell>
+        <TableCell>{`Size: ${sizeFmt(file.size)}`}</TableCell>
         <TableCell sx={{ padding: "unset", minWidth: "11.5rem" }}>
           <Stack flexDirection={"row"} alignItems={"center"}>
-            <Typography mr={1}>状态:</Typography>
+            <Typography mr={1}>Status:</Typography>
             {renderStatus()}
           </Stack>
         </TableCell>

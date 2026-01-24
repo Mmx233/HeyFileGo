@@ -12,32 +12,32 @@ const (
 var (
 	ErrForm = Msg{
 		Code:       cErrForm,
-		Msg:        "参数错误，请反馈开发者",
+		Msg:        "Invalid parameters, please report to the developer",
 		HttpStatus: 400,
 	}
 	ErrMode = Msg{
 		Code:       cErrMode,
-		Msg:        "运行模式异常，请反馈开发者",
+		Msg:        "Invalid runtime mode, please report to the developer",
 		HttpStatus: 403,
 	}
 	ErrFileOperation = Msg{
 		Code:       cErrFileOperation,
-		Msg:        "文件操作失败",
+		Msg:        "File operation failed",
 		HttpStatus: 500,
 	}
 	ErrNotDir = Msg{
 		Code:       cErrNotDir,
-		Msg:        "目标路径不是文件夹",
+		Msg:        "Target path is not a directory",
 		HttpStatus: 403,
 	}
 	ErrFileNotFound = Msg{
 		Code:       cErrFileNotFound,
-		Msg:        "文件不存在",
+		Msg:        "File not found",
 		HttpStatus: 404,
 	}
 	ErrNotFile = Msg{
 		Code:       cErrNotFile,
-		Msg:        "目标路径是文件夹",
+		Msg:        "Target path is a directory",
 		HttpStatus: 403,
 	}
 )

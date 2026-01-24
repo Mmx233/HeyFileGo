@@ -15,13 +15,13 @@ func initServer() {
 	} else {
 		rootFile, err := os.OpenFile(Commands.Path, os.O_RDONLY, 0600)
 		if err != nil {
-			slog.Error("读取目标路径失败", "err", err)
+			slog.Error("Failed to read target path", "err", err)
 			os.Exit(1)
 		}
 		defer rootFile.Close()
 		FileInfo, err = rootFile.Stat()
 		if err != nil {
-			slog.Error("读取路径信息失败", "err", err)
+			slog.Error("Failed to read path info", "err", err)
 			os.Exit(1)
 		}
 		if FileInfo.IsDir() {
@@ -31,7 +31,7 @@ func initServer() {
 		}
 	}
 
-	slog.Info("运行模式: " + Mode)
+	slog.Info("Mode: " + Mode)
 }
 
 const (
