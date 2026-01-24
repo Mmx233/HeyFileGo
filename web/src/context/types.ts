@@ -5,6 +5,6 @@ import { FileBrowserState, FileBrowserAction } from "./fileBrowserReducer";
 export interface FileBrowserContextValue {
   state: FileBrowserState;
   dispatch: React.Dispatch<FileBrowserAction>;
-  navigateTo: (path: string) => Promise<void>;
-  refresh: () => Promise<void>;
+  navigateTo: (path: string) => void;
+  refresh: () => void;
 }
