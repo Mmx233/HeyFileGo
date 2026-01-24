@@ -19,7 +19,7 @@ export const Upload: FC = () => {
   };
   const onDrag = (ev: DragEvent) => {
     if (ev.dataTransfer?.items) {
-      let files: Array<File> = [];
+      const files: Array<File> = [];
       [...ev.dataTransfer.items].forEach((item) => {
         if (item.kind === "file") {
           const file = item.getAsFile();

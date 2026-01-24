@@ -84,10 +84,11 @@ export const Item: FC<Props> = ({ file }) => {
         boxSizing={"border-box"}
         pr={1}
         maxWidth={"15rem"}
+        flexWrap={"nowrap"}
       >
-        <Stack direction={"row"} alignItems={"center"}>
+        <Stack direction={"row"} alignItems={"center"} flexShrink={0}>
           <CircularProgressWithLabel size={30} value={process} color={"info"} />
-          <Typography variant={"body2"} ml={1.5}>
+          <Typography variant={"body2"} ml={1.5} whiteSpace={"nowrap"}>
             {uploadSpeed === 0 ? "--" : sizeFmt(uploadSpeed, 0) + "/s"}
           </Typography>
         </Stack>
@@ -112,9 +113,9 @@ export const Item: FC<Props> = ({ file }) => {
       <TableRow>
         <TableCell>{`Name: ${file.name}`}</TableCell>
         <TableCell>{`Size: ${sizeFmt(file.size)}`}</TableCell>
-        <TableCell sx={{ padding: "unset", minWidth: "11.5rem" }}>
-          <Stack flexDirection={"row"} alignItems={"center"}>
-            <Typography mr={1}>Status:</Typography>
+        <TableCell sx={{ padding: "unset", minWidth: "11.5rem", whiteSpace: "nowrap" }}>
+          <Stack flexDirection={"row"} alignItems={"center"} flexWrap={"nowrap"}>
+            <Typography mr={1} flexShrink={0}>Status:</Typography>
             {renderStatus()}
           </Stack>
         </TableCell>
