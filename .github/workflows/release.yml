@@ -40,14 +40,13 @@ jobs:
 
       - name: Build Go
         env:
-          NAME: hey-file-go
           LDFLAGS: -X main.Version=${{ github.ref_name }}
         run: |
           ./build/release --output build/output \
             --name "$NAME" \
             --ldflags="$LDFLAGS" \
             -c tar.gz \
-            ./cmd/HeyFileGo
+            ./cmd/hey
       
       - name: Upload Release
         uses: softprops/action-gh-release@v2

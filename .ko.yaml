@@ -11,8 +11,8 @@ defaultPlatforms:
   - linux/s390x
 
 builds:
-  - id: hey-file-go
-    main: ./cmd/HeyFileGo
+  - id: hey
+    main: ./cmd/hey
     env:
       - CGO_ENABLED=0
     flags:
