@@ -2,8 +2,9 @@ package callback
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log/slog"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Msg struct {

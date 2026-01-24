@@ -1,11 +1,12 @@
 package middlewares
 
 import (
-	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
-	"github.com/gin-gonic/gin"
 	"net/url"
 	"path"
 	"strings"
+
+	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
+	"github.com/gin-gonic/gin"
 )
 
 func DecodeQueryPath(c *gin.Context) {

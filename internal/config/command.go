@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/alecthomas/kingpin/v2"
 	"os"
+
+	"github.com/alecthomas/kingpin/v2"
 )
 
 var Commands struct {

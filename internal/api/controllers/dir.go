@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
-	"github.com/Mmx233/HeyFileGo/v2/internal/config"
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"os"
 	"path"
+
+	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
+	"github.com/Mmx233/HeyFileGo/v2/internal/config"
+	"github.com/gin-gonic/gin"
 )
 
 type File struct {

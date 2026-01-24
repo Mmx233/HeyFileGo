@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"strings"
+
+	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
+	"github.com/gin-gonic/gin"
 )
 
 func Upload(c *gin.Context) {

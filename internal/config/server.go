@@ -31,7 +31,7 @@ func initServer() {
 		}
 	}
 
-	slog.Info("Mode: " + Mode)
+	slog.Info("Running mode: " + Mode)
 }
 
 const (

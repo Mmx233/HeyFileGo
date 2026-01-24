@@ -3,11 +3,12 @@
 package router
 
 import (
+	"log/slog"
+	"os"
+
 	webServe "github.com/Mmx233/GinWebServe"
 	"github.com/Mmx233/HeyFileGo/v2/web"
 	"github.com/gin-gonic/gin"
-	"log/slog"
-	"os"
 )
 
 func frontendHandler() gin.HandlerFunc {

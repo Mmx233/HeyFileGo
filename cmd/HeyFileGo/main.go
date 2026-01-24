@@ -3,15 +3,16 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/Mmx233/HeyFileGo/v2/internal/config"
-	"github.com/Mmx233/HeyFileGo/v2/internal/router"
-	"github.com/Mmx233/HeyFileGo/v2/pkg/cert"
-	"github.com/Mmx233/HeyFileGo/v2/pkg/netInterface"
 	"log/slog"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
+
+	"github.com/Mmx233/HeyFileGo/v2/internal/config"
+	"github.com/Mmx233/HeyFileGo/v2/internal/router"
+	"github.com/Mmx233/HeyFileGo/v2/pkg/cert"
+	"github.com/Mmx233/HeyFileGo/v2/pkg/netInterface"
 )
 
 var Version = "unknown"

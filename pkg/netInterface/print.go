@@ -2,10 +2,11 @@ package netInterface
 
 import (
 	"fmt"
-	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
-	"github.com/fatih/color"
 	"net/url"
 	"strings"
+
+	qrcodeTerminal "github.com/Baozisoftware/qrcode-terminal-go"
+	"github.com/fatih/color"
 )
 
 func NewPrinter() Printer {
