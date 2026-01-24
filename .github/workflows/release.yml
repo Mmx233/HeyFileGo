@@ -28,7 +28,13 @@ jobs:
         with:
           go-version: 'stable'
 
-      - name: Build
+      - name: Build Web
+        run: |
+          cd web
+          pnpm install --frozen-lockfile
+          pnpm run build
+
+      - name: Build Go
         env:
           NAME: hey-file-go
           LDFLAGS: -X main.Version=${{ github.ref_name }}

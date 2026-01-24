@@ -1,0 +1,23 @@
+# Ko configuration for building container images
+# See: https://ko.build/configuration/
+
+# Target platforms for multi-architecture builds
+defaultPlatforms:
+  - linux/amd64
+  - linux/arm64
+  - linux/arm/v7
+  - linux/386
+  - linux/ppc64le
+  - linux/s390x
+
+builds:
+  - id: hey-file-go
+    main: ./cmd/HeyFileGo
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -extldflags '-static'
+      - X main.Version={{.Env.VERSION}}
