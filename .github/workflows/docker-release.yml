@@ -1,0 +1,36 @@
+# Docker Release Workflow
+# Builds and publishes cross-platform Docker images to Docker Hub using ko
+# Triggers on release publish or manual dispatch
+
+name: Docker Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+
+      - name: Setup ko
+        uses: ko-build/setup-ko@v0.8
+
+      - name: Login to Registry
+        env:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: echo "$password" | ko login docker.io -u "$username" --password-stdin
+
+      - name: Build and Push
+        env:
+          KO_DOCKER_REPO: ${{ vars.DOCKERHUB_REPO }}
+          VERSION: ${{ github.ref_name }}
+        run: ko build --sbom none --bare --tags latest,${{ github.ref_name }} .

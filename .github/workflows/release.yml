@@ -1,0 +1,46 @@
+name: Release Draft
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Release Cli
+        uses: robinraju/release-downloader@v1.12
+        with:
+          repository: "Mmx233/GoReleaseCli"
+          latest: true
+          fileName: 'release_linux_amd64.tar.gz'
+          extract: true
+          out-file-path: './build/'
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Build
+        env:
+          NAME: hey-file-go
+          LDFLAGS: -X main.Version=${{ github.ref_name }}
+        run: |
+          ./build/release --output build/output \
+            --name "$NAME" \
+            --ldflags="$LDFLAGS" \
+            -c tar.gz \
+            ./cmd/HeyFileGo
+      
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: build/output/*.tar.gz
