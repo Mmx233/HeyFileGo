@@ -20,4 +20,4 @@ builds:
     ldflags:
       - -s -w
       - -extldflags '-static'
-      - X main.Version={{.Env.VERSION}}
+      - -X main.Version={{.Env.VERSION}}
