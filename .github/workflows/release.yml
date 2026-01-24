@@ -24,6 +24,10 @@ jobs:
           extract: true
           out-file-path: './build/'
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - uses: actions/setup-go@v5
         with:
           go-version: 'stable'
