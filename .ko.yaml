@@ -1,14 +1,11 @@
 # Ko configuration for building container images
 # See: https://ko.build/configuration/
 
+defaultBaseImage: gcr.io/distroless/static
+
 # Target platforms for multi-architecture builds
 defaultPlatforms:
-  - linux/amd64
-  - linux/arm64
-  - linux/arm/v7
-  - linux/386
-  - linux/ppc64le
-  - linux/s390x
+  - all
 
 builds:
   - id: hey
