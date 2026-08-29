@@ -2,25 +2,48 @@ package middlewares
 
 import (
 	"net/url"
-	"path"
-	"strings"
 
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
+	"github.com/Mmx233/HeyFileGo/v2/internal/share"
 	"github.com/gin-gonic/gin"
 )
 
-func DecodeQueryPath(c *gin.Context) {
-	if c.Request.URL.RawQuery != "" {
-		var err error
-		c.Request.URL.RawQuery, err = url.QueryUnescape(c.Request.URL.RawQuery)
-		if err != nil {
-			callback.Error(c, callback.ErrForm, err)
-		}
+const queryPathKey = "heyfilego.relative-path"
 
-		c.Request.URL.RawQuery = strings.Replace(c.Request.URL.RawQuery, "\\", "/", -1)
-		if c.Request.URL.RawQuery[0] != '/' {
-			c.Request.URL.RawQuery = "/" + c.Request.URL.RawQuery
-		}
-		c.Request.URL.RawQuery = path.Clean(c.Request.URL.RawQuery)
+func DecodeQueryPath(c *gin.Context) {
+	values, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		callback.Error(c, callback.ErrInvalidPath, err)
+		return
 	}
+
+	pathValues, hasPath := values["path"]
+	if c.Request.URL.RawQuery != "" && !hasPath {
+		callback.Error(c, callback.ErrInvalidPath)
+		return
+	}
+	if len(pathValues) > 1 {
+		callback.Error(c, callback.ErrInvalidPath)
+		return
+	}
+
+	value := ""
+	if len(pathValues) == 1 {
+		value = pathValues[0]
+	}
+	relativePath, err := share.ParseRelativePath(value)
+	if err != nil {
+		callback.Error(c, callback.ErrInvalidPath, err)
+		return
+	}
+	c.Set(queryPathKey, relativePath)
+}
+
+func QueryPath(c *gin.Context) (share.RelativePath, bool) {
+	value, exists := c.Get(queryPathKey)
+	if !exists {
+		return "", false
+	}
+	path, ok := value.(share.RelativePath)
+	return path, ok
 }

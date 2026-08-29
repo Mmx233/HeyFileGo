@@ -11,6 +11,7 @@ import (
 
 	"github.com/Mmx233/HeyFileGo/v2/internal/config"
 	"github.com/Mmx233/HeyFileGo/v2/internal/router"
+	"github.com/Mmx233/HeyFileGo/v2/internal/share"
 	"github.com/Mmx233/HeyFileGo/v2/pkg/cert"
 	"github.com/Mmx233/HeyFileGo/v2/pkg/netInterface"
 )
@@ -21,9 +22,9 @@ func init() {
 	config.Init(Version)
 }
 
-func apiServer(listener net.Listener) {
+func apiServer(listener net.Listener, target *share.Target) {
 	var err error
-	engine := router.Init()
+	engine := router.Init(target)
 	if config.Commands.Ssl {
 		var certificate tls.Certificate
 		certificate, err = cert.Gen()
@@ -46,24 +47,32 @@ func apiServer(listener net.Listener) {
 	}
 }
 
-func printEth(printer netInterface.Printer, ethUrl *url.URL) {
+func printEth(printer netInterface.Printer, ethUrl *url.URL, target *share.Target) {
 	printer.Url(ethUrl)
-	if config.Mode == config.ModeFile {
+	if target.Mode() == share.ModeFile {
 		downloadUrl := *ethUrl
 		downloadUrl.Path = "/api/file/"
-		printer.Wget(&downloadUrl, config.FileInfo.Name())
+		printer.Wget(&downloadUrl, target.FileName())
 	}
 	printer.Qr(ethUrl)
 }
 
 func main() {
+	target, err := share.OpenTarget(config.Commands.Path)
+	if err != nil {
+		slog.Error("Failed to read target path", "err", err)
+		os.Exit(1)
+	}
+	defer target.Close()
+	slog.Info("Running mode: " + string(target.Mode()))
+
 	listener, err := net.Listen("tcp", ":"+fmt.Sprint(config.Commands.Port))
 	if err != nil {
 		slog.Error("Failed to start HTTP listener", "err", err)
 		os.Exit(1)
 	}
 
-	go apiServer(listener)
+	go apiServer(listener, target)
 
 	ethList, err := netInterface.Load()
 	if err != nil {
@@ -75,7 +84,7 @@ func main() {
 		case 0:
 			slog.Warn("No available network interface found!")
 		case 1:
-			printEth(printer.Printer, printer.EthUrl(ethList[0]))
+			printEth(printer.Printer, printer.EthUrl(ethList[0]), target)
 		default:
 			ethUrlList := printer.EthSelect(ethList)
 			for {
@@ -90,7 +99,7 @@ func main() {
 					slog.Error("Invalid index", "err", err)
 					continue
 				}
-				printEth(printer.Printer, ethUrlList[n])
+				printEth(printer.Printer, ethUrlList[n], target)
 			}
 		}
 	}

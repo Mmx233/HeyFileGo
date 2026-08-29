@@ -1,12 +1,8 @@
 package controllers
 
 import (
-	"log/slog"
-	"os"
-	"path"
-
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
-	"github.com/Mmx233/HeyFileGo/v2/internal/config"
+	"github.com/Mmx233/HeyFileGo/v2/internal/api/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,79 +12,61 @@ type File struct {
 	Size  int64  `json:"size,omitempty"`
 }
 
-func DirContent(c *gin.Context) {
-	var dirPath = path.Join(config.Commands.Path, c.Request.URL.RawQuery)
+func (h *Controller) DirContent(c *gin.Context) {
+	relativePath, ok := middlewares.QueryPath(c)
+	if !ok {
+		callback.Error(c, callback.ErrInvalidPath)
+		return
+	}
 
-	dir, err := os.OpenFile(dirPath, os.O_RDONLY, 0600)
+	dir, err := h.target.OpenDirectory(relativePath)
 	if err != nil {
-		callback.Error(c, callback.ErrFileOperation, err)
+		targetError(c, err)
 		return
 	}
 	defer dir.Close()
 
-	dirInfo, err := dir.Stat()
-	if err != nil {
-		callback.Error(c, callback.ErrFileOperation, err)
-		return
-	} else if !dirInfo.IsDir() {
-		callback.Error(c, callback.ErrNotDir)
-		return
-	}
-
-	files, err := dir.Readdir(0)
+	files, err := dir.ReadDir(-1)
 	if err != nil {
 		callback.Error(c, callback.ErrFileOperation, err)
 		return
 	}
 
-	fileInfos := make([]File, len(files))
-	for i, file := range files {
+	fileInfos := make([]File, 0, len(files))
+	for _, file := range files {
+		childPath, err := relativePath.Join(file.Name())
+		if err != nil {
+			continue
+		}
+		info, err := h.target.EntryInfo(childPath)
+		if err != nil || (!info.IsDir() && !info.Mode().IsRegular()) {
+			continue
+		}
 		fileInfo := File{
 			Name:  file.Name(),
-			IsDir: file.IsDir(),
+			IsDir: info.IsDir(),
 		}
 		if !fileInfo.IsDir {
-			fileInfo.Size = file.Size()
+			fileInfo.Size = info.Size()
 		}
-		fileInfos[i] = fileInfo
+		fileInfos = append(fileInfos, fileInfo)
 	}
 
 	callback.Success(c, fileInfos)
 }
 
-func DirUpload(c *gin.Context) {
-	f, err := c.FormFile("file")
+func (h *Controller) DirFileDownload(c *gin.Context) {
+	relativePath, ok := middlewares.QueryPath(c)
+	if !ok {
+		callback.Error(c, callback.ErrInvalidPath)
+		return
+	}
+
+	file, info, err := h.target.OpenRegular(relativePath)
 	if err != nil {
-		callback.ErrorWithTip(c, callback.ErrForm, "Failed to read form file", err)
+		targetError(c, err)
 		return
 	}
-
-	var targetPath = path.Join(config.Commands.Path, c.Request.URL.RawQuery, f.Filename)
-
-	if err = c.SaveUploadedFile(f, targetPath); err != nil {
-		callback.Error(c, callback.ErrFileOperation, err)
-		return
-	}
-
-	slog.Info("File " + f.Filename + " uploaded to " + c.Request.URL.RawQuery)
-	callback.Default(c)
-}
-
-func DirFileDownload(c *gin.Context) {
-	var targetPath = path.Join(config.Commands.Path, c.Request.URL.RawQuery)
-	fileState, err := os.Stat(targetPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			callback.Error(c, callback.ErrFileNotFound)
-			return
-		}
-		callback.Error(c, callback.ErrFileOperation, err)
-		return
-	}
-	if fileState.IsDir() {
-		callback.Error(c, callback.ErrNotFile)
-		return
-	}
-
-	c.FileAttachment(targetPath, fileState.Name())
+	defer file.Close()
+	serveAttachment(c, relativePath.Base(), info, file)
 }

@@ -15,10 +15,11 @@ type Msg struct {
 }
 
 func Error(c *gin.Context, msg Msg, args ...any) {
-	for _, arg := range args {
-		msg.Msg += ": " + fmt.Sprint(arg)
+	if len(args) == 0 {
+		slog.Error(msg.Msg)
+	} else {
+		slog.Error(msg.Msg, "detail", fmt.Sprint(args...))
 	}
-	slog.Error(msg.Msg)
 	c.JSON(msg.HttpStatus, msg)
 	c.Abort()
 }

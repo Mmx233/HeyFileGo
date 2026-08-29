@@ -15,10 +15,10 @@ interface FileBrowserProviderProps {
 
 // Fetcher function for SWR
 const fetcher = async (path: string): Promise<Dir.Info[]> => {
-  // API uses query string for path: /api/dir/?<path>
-  // Root path should be empty query string
   const queryPath = path === "/" ? "" : path.replace(/^\/+/, "");
-  const { data: { data } } = await api.get<ApiResponse<Dir.Info[]>>(`dir/?${queryPath}`);
+  const { data: { data } } = await api.get<ApiResponse<Dir.Info[]>>("dir/", {
+    params: { path: queryPath },
+  });
   return data || [];
 };
 

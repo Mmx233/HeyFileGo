@@ -65,9 +65,8 @@ const DirPageContent: FC = () => {
   // Handle downloading a file
   const handleDownloadFile = useCallback(
     (item: Dir.Info) => {
-      // API uses query string for path: /api/dir/file?<path>
       const filePath = currentPath === "/" ? item.name : `${currentPath.replace(/^\/+/, "")}/${item.name}`;
-      const downloadUrl = `/api/dir/file?${filePath}`;
+      const downloadUrl = `/api/dir/file?${new URLSearchParams({ path: filePath })}`;
       
       // Use anchor element for download instead of window.open
       const link = document.createElement("a");

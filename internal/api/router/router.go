@@ -3,21 +3,23 @@ package router
 import (
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/controllers"
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/middlewares"
-	"github.com/Mmx233/HeyFileGo/v2/internal/config"
+	"github.com/Mmx233/HeyFileGo/v2/internal/share"
 	"github.com/gin-gonic/gin"
 )
 
-func Init(G *gin.RouterGroup) {
-	file := G.Group("file", middlewares.MustMode(config.ModeFile))
-	file.GET("/", controllers.DownloadFile)
-	file.GET("info", controllers.FileInfo)
+func Init(G *gin.RouterGroup, target *share.Target) {
+	controller := controllers.New(target)
 
-	G.POST("upload", middlewares.MustMode(config.ModeUpload), controllers.Upload)
+	file := G.Group("file", middlewares.MustMode(target, share.ModeFile))
+	file.GET("/", controller.DownloadFile)
+	file.GET("info", controller.FileInfo)
+
+	G.POST("upload", middlewares.MustMode(target, share.ModeUpload), controllers.Upload)
 
 	dir := G.Group("dir",
-		middlewares.MustMode(config.ModeDir),
+		middlewares.MustMode(target, share.ModeDir),
 		middlewares.DecodeQueryPath,
 	)
-	dir.GET("/", controllers.DirContent)
-	dir.GET("file", controllers.DirFileDownload)
+	dir.GET("/", controller.DirContent)
+	dir.GET("file", controller.DirFileDownload)
 }

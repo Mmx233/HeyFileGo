@@ -7,6 +7,7 @@ const (
 	cErrNotDir
 	cErrFileNotFound
 	cErrNotFile
+	cErrInvalidPath
 )
 
 var (
@@ -39,5 +40,10 @@ var (
 		Code:       cErrNotFile,
 		Msg:        "Target path is a directory",
 		HttpStatus: 403,
+	}
+	ErrInvalidPath = Msg{
+		Code:       cErrInvalidPath,
+		Msg:        "Invalid path",
+		HttpStatus: 400,
 	}
 )

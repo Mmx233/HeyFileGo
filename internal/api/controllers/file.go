@@ -2,17 +2,26 @@ package controllers
 
 import (
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
-	"github.com/Mmx233/HeyFileGo/v2/internal/config"
 	"github.com/gin-gonic/gin"
 )
 
-func DownloadFile(c *gin.Context) {
-	c.FileAttachment(config.Commands.Path, config.FileInfo.Name())
+func (h *Controller) DownloadFile(c *gin.Context) {
+	name, info, content, err := h.target.SingleContent()
+	if err != nil {
+		callback.Error(c, callback.ErrFileOperation, err)
+		return
+	}
+	serveAttachment(c, name, info, content)
 }
 
-func FileInfo(c *gin.Context) {
+func (h *Controller) FileInfo(c *gin.Context) {
+	name, info, _, err := h.target.SingleContent()
+	if err != nil {
+		callback.Error(c, callback.ErrFileOperation, err)
+		return
+	}
 	callback.Success(c, gin.H{
-		"name": config.FileInfo.Name(),
-		"size": config.FileInfo.Size(),
+		"name": name,
+		"size": info.Size(),
 	})
 }
