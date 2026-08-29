@@ -6,6 +6,7 @@ import (
 	"mime"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -73,9 +74,21 @@ func TestDirectoryAPIUsesStandardRelativePath(t *testing.T) {
 		t.Fatalf("Content-Disposition = %q (%q, %#v, %v)", response.Header().Get("Content-Disposition"), disposition, params, err)
 	}
 
+	headRequest := httptest.NewRequest(http.MethodHead, "/api/dir/file?path=nested%2Ffile.txt", nil)
+	headResponse := httptest.NewRecorder()
+	engine.ServeHTTP(headResponse, headRequest)
+	if headResponse.Code != http.StatusOK || headResponse.Body.Len() != 0 || headResponse.Header().Get("Content-Length") != "7" {
+		t.Fatalf("HEAD response = %d, length %q, body %q", headResponse.Code, headResponse.Header().Get("Content-Length"), headResponse.Body.String())
+	}
+
 	response = performRequest(engine, "/api/dir/file?path=nested")
 	if response.Code != http.StatusForbidden {
 		t.Fatalf("directory download status = %d, body = %s", response.Code, response.Body.String())
+	}
+
+	response = performRequest(engine, "/api/dir/?path=nested%2Ffile.txt")
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("file listing status = %d, body = %s", response.Code, response.Body.String())
 	}
 
 	response = performRequest(engine, "/api/dir/file?path=..%2Foutside.txt")
@@ -94,6 +107,42 @@ func TestDirectoryAPIUsesStandardRelativePath(t *testing.T) {
 	engine.ServeHTTP(response, request)
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("malformed query status = %d, body = %s", response.Code, response.Body.String())
+	}
+}
+
+func TestDirectoryAPIPreservesSpecialFileNames(t *testing.T) {
+	rootPath := t.TempDir()
+	names := []string{
+		"literal+plus.txt",
+		"literal%41.txt",
+		"hash#name.txt",
+		"amp&equals=.txt",
+		"space name.txt",
+		"unicode-\u6587\u4ef6.txt",
+	}
+	for _, name := range names {
+		if err := os.WriteFile(filepath.Join(rootPath, name), []byte(name), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	target, err := share.OpenTarget(rootPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { target.Close() })
+	engine := newEngine(target)
+
+	for _, name := range names {
+		query := url.Values{"path": {name}}.Encode()
+		response := performRequest(engine, "/api/dir/file?"+query)
+		if response.Code != http.StatusOK || response.Body.String() != name {
+			t.Errorf("download %q = %d %q", name, response.Code, response.Body.String())
+		}
+		_, params, err := mime.ParseMediaType(response.Header().Get("Content-Disposition"))
+		if err != nil || params["filename"] != name {
+			t.Errorf("download %q Content-Disposition = %q (%#v, %v)", name, response.Header().Get("Content-Disposition"), params, err)
+		}
 	}
 }
 
@@ -172,6 +221,13 @@ func TestConcurrentSingleFileRangeDownloads(t *testing.T) {
 	}
 	t.Cleanup(func() { target.Close() })
 	engine := newEngine(target)
+
+	headRequest := httptest.NewRequest(http.MethodHead, "/api/file/", nil)
+	headResponse := httptest.NewRecorder()
+	engine.ServeHTTP(headResponse, headRequest)
+	if headResponse.Code != http.StatusOK || headResponse.Body.Len() != 0 || headResponse.Header().Get("Content-Length") != fmt.Sprint(len(content)) {
+		t.Fatalf("single-file HEAD response = %d, length %q, body length %d", headResponse.Code, headResponse.Header().Get("Content-Length"), headResponse.Body.Len())
+	}
 
 	const requests = 32
 	errs := make(chan error, requests)

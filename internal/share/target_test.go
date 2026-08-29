@@ -27,7 +27,10 @@ func mustRelativePath(t *testing.T, value string) RelativePath {
 }
 
 func TestParseRelativePath(t *testing.T) {
-	for _, valid := range []string{"", ".", "file.txt", "nested/file.txt", "space name"} {
+	for _, valid := range []string{
+		"", ".", "file.txt", "nested/file.txt", "space name",
+		"literal+plus", "literal%41", "hash#name", "amp&equals=",
+	} {
 		if _, err := ParseRelativePath(valid); err != nil {
 			t.Errorf("ParseRelativePath(%q) returned %v", valid, err)
 		}
@@ -135,6 +138,52 @@ func TestDirectoryTargetSymlinkPolicy(t *testing.T) {
 			file.Close()
 			t.Fatalf("unsafe symlink %q was opened", denied)
 		}
+	}
+}
+
+func TestOpenTargetPinsSelectedSymlinkTarget(t *testing.T) {
+	base := t.TempDir()
+	directory := filepath.Join(base, "directory")
+	if err := os.Mkdir(directory, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	filePath := filepath.Join(base, "file.txt")
+	mustWriteFile(t, filePath, "content")
+
+	directoryLink := filepath.Join(base, "directory-link")
+	if err := os.Symlink("directory", directoryLink); err != nil {
+		t.Skipf("symlinks are unavailable: %v", err)
+	}
+	fileLink := filepath.Join(base, "file-link")
+	if err := os.Symlink("file.txt", fileLink); err != nil {
+		t.Skipf("cannot create file symlink: %v", err)
+	}
+
+	directoryTarget, err := OpenTarget(directoryLink)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if directoryTarget.Mode() != ModeDir {
+		directoryTarget.Close()
+		t.Fatalf("directory symlink mode = %q, want %q", directoryTarget.Mode(), ModeDir)
+	}
+	directoryTarget.Close()
+
+	fileTarget, err := OpenTarget(fileLink)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fileTarget.Close()
+	if fileTarget.Mode() != ModeFile {
+		t.Fatalf("file symlink mode = %q, want %q", fileTarget.Mode(), ModeFile)
+	}
+	_, _, content, err := fileTarget.SingleContent()
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := io.ReadAll(content)
+	if err != nil || string(got) != "content" {
+		t.Fatalf("file symlink content = %q, %v", got, err)
 	}
 }
 

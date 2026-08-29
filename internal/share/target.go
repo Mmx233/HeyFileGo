@@ -36,23 +36,32 @@ func OpenTarget(name string) (*Target, error) {
 		return &Target{mode: ModeUpload}, nil
 	}
 
-	root, rootErr := os.OpenRoot(name)
-	if rootErr == nil {
-		return &Target{mode: ModeDir, root: root}, nil
-	}
-
-	file, err := os.Open(name)
+	info, err := os.Stat(name)
 	if err != nil {
-		return nil, fmt.Errorf("open target: %w", err)
-	}
-	info, err := file.Stat()
-	if err != nil {
-		file.Close()
 		return nil, fmt.Errorf("stat target: %w", err)
 	}
 	if info.IsDir() {
+		// A trailing separator makes the OS require a directory during the
+		// open, so a concurrent replacement with a FIFO cannot block startup.
+		rootName := name
+		if !os.IsPathSeparator(rootName[len(rootName)-1]) {
+			rootName += string(os.PathSeparator)
+		}
+		root, err := os.OpenRoot(rootName)
+		if err != nil {
+			return nil, fmt.Errorf("open directory target: %w", err)
+		}
+		return &Target{mode: ModeDir, root: root}, nil
+	}
+
+	file, err := openReadOnly(name)
+	if err != nil {
+		return nil, fmt.Errorf("open target: %w", err)
+	}
+	info, err = file.Stat()
+	if err != nil {
 		file.Close()
-		return nil, fmt.Errorf("open directory target: %w", rootErr)
+		return nil, fmt.Errorf("stat target: %w", err)
 	}
 	if !info.Mode().IsRegular() {
 		file.Close()
@@ -89,40 +98,35 @@ func (t *Target) OpenDirectory(name RelativePath) (*os.File, error) {
 	if t.mode != ModeDir || t.root == nil {
 		return nil, ErrWrongMode
 	}
-	file, err := t.root.Open(name.String())
+	dir, err := t.root.OpenRoot(name.String())
 	if err != nil {
+		if info, statErr := t.root.Stat(name.String()); statErr == nil && !info.IsDir() {
+			return nil, ErrNotDirectory
+		}
 		return nil, err
 	}
-	info, err := file.Stat()
+	defer dir.Close()
+
+	file, err := dir.Open(".")
 	if err != nil {
-		file.Close()
 		return nil, err
-	}
-	if !info.IsDir() {
-		file.Close()
-		return nil, ErrNotDirectory
 	}
 	return file, nil
 }
 
-// EntryInfo resolves name through the held root and stats the resulting handle.
+// EntryInfo resolves name through the held root without opening special files.
 func (t *Target) EntryInfo(name RelativePath) (fs.FileInfo, error) {
 	if t.mode != ModeDir || t.root == nil {
 		return nil, ErrWrongMode
 	}
-	file, err := t.root.Open(name.String())
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	return file.Stat()
+	return t.root.Stat(name.String())
 }
 
 func (t *Target) OpenRegular(name RelativePath) (*os.File, fs.FileInfo, error) {
 	if t.mode != ModeDir || t.root == nil {
 		return nil, nil, ErrWrongMode
 	}
-	file, err := t.root.Open(name.String())
+	file, err := openRootReadOnly(t.root, name.String())
 	if err != nil {
 		return nil, nil, err
 	}
