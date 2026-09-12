@@ -9,7 +9,7 @@ defaultPlatforms:
 
 builds:
   - id: hey
-    main: ./cmd/hey
+    main: .
     env:
       - CGO_ENABLED=0
     flags:

@@ -46,7 +46,7 @@ jobs:
             --name "$NAME" \
             --ldflags="$LDFLAGS" \
             -c tar.gz \
-            ./cmd/hey
+            .
       
       - name: Upload Release
         uses: softprops/action-gh-release@v3

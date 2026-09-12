@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"crypto/tls"
@@ -9,23 +9,23 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/Mmx233/HeyFileGo/v2/internal/config"
 	"github.com/Mmx233/HeyFileGo/v2/internal/router"
 	"github.com/Mmx233/HeyFileGo/v2/internal/share"
 	"github.com/Mmx233/HeyFileGo/v2/pkg/cert"
 	"github.com/Mmx233/HeyFileGo/v2/pkg/netInterface"
 )
 
-var Version = "unknown"
-
-func init() {
-	config.Init(Version)
+type Options struct {
+	SSL  bool
+	Port uint
+	Bind net.IP
+	Path string
 }
 
-func apiServer(listener net.Listener, target *share.Target) {
+func apiServer(listener net.Listener, target *share.Target, ssl bool) {
 	var err error
 	engine := router.Init(target)
-	if config.Commands.Ssl {
+	if ssl {
 		var certificate tls.Certificate
 		certificate, err = cert.Gen()
 		if err != nil {
@@ -57,35 +57,33 @@ func printEth(printer netInterface.Printer, ethUrl *url.URL, target *share.Targe
 	printer.Qr(ethUrl)
 }
 
-func main() {
-	target, err := share.OpenTarget(config.Commands.Path)
+func Run(options Options) error {
+	target, err := share.OpenTarget(options.Path)
 	if err != nil {
-		slog.Error("Failed to read target path", "err", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to read target path: %w", err)
 	}
 	defer target.Close()
 	slog.Info("Running mode: " + string(target.Mode()))
 
 	var bind string
-	if config.Commands.Bind != nil {
-		bind = config.Commands.Bind.String()
+	if options.Bind != nil {
+		bind = options.Bind.String()
 	}
-	listener, err := net.Listen("tcp", net.JoinHostPort(bind, fmt.Sprint(config.Commands.Port)))
+	listener, err := net.Listen("tcp", net.JoinHostPort(bind, fmt.Sprint(options.Port)))
 	if err != nil {
-		slog.Error("Failed to start HTTP listener", "err", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to start HTTP listener: %w", err)
 	}
 
-	go apiServer(listener, target)
+	go apiServer(listener, target, options.SSL)
 
 	ethList := []netInterface.Eth{{Ip: bind}}
-	if config.Commands.Bind == nil || config.Commands.Bind.IsUnspecified() {
+	if options.Bind == nil || options.Bind.IsUnspecified() {
 		ethList, err = netInterface.Load()
 	}
 	if err != nil {
 		slog.Info("Failed to get network interface info", "err", err)
 	} else {
-		printer := netInterface.NewPrinter().WithEth(config.Commands.Ssl, fmt.Sprint(listener.Addr().(*net.TCPAddr).Port))
+		printer := netInterface.NewPrinter().WithEth(options.SSL, fmt.Sprint(listener.Addr().(*net.TCPAddr).Port))
 
 		switch len(ethList) {
 		case 0:
