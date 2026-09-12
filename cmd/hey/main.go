@@ -66,7 +66,11 @@ func main() {
 	defer target.Close()
 	slog.Info("Running mode: " + string(target.Mode()))
 
-	listener, err := net.Listen("tcp", ":"+fmt.Sprint(config.Commands.Port))
+	var bind string
+	if config.Commands.Bind != nil {
+		bind = config.Commands.Bind.String()
+	}
+	listener, err := net.Listen("tcp", net.JoinHostPort(bind, fmt.Sprint(config.Commands.Port)))
 	if err != nil {
 		slog.Error("Failed to start HTTP listener", "err", err)
 		os.Exit(1)
@@ -74,7 +78,10 @@ func main() {
 
 	go apiServer(listener, target)
 
-	ethList, err := netInterface.Load()
+	ethList := []netInterface.Eth{{Ip: bind}}
+	if config.Commands.Bind == nil || config.Commands.Bind.IsUnspecified() {
+		ethList, err = netInterface.Load()
+	}
 	if err != nil {
 		slog.Info("Failed to get network interface info", "err", err)
 	} else {

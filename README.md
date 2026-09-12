@@ -26,7 +26,8 @@ Simply start the program
 
 # Flags
 
-| Flag        | Value  | Description                                      |
-|-------------|--------|--------------------------------------------------|
-| -p / --port | uint16 | Specify port                                     |
-| -s / --ssl  | -      | Use HTTPS with auto-generated certificate        |
+| Flag        | Value  | Description                                               |
+|-------------|--------|-----------------------------------------------------------|
+| -p / --port | uint16 | Specify port                                              |
+| -s / --ssl  | -      | Use HTTPS with auto-generated certificate                 |
+| --bind      | IP     | Listen on a specific IP address (default: all interfaces) |

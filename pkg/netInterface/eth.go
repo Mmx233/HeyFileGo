@@ -13,7 +13,7 @@ type Eth struct {
 func (e Eth) Url(scheme, port string) *url.URL {
 	return &url.URL{
 		Scheme: scheme,
-		Host:   e.Ip + ":" + port,
+		Host:   net.JoinHostPort(e.Ip, port),
 	}
 }
 
