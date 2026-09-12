@@ -2,7 +2,6 @@
 
 [![License](https://img.shields.io/github/license/Mmx233/HeyFileGo)](https://github.com/Mmx233/HeyFileGo/blob/main/LICENSE)
 [![Release](https://img.shields.io/github/v/release/Mmx233/HeyFileGo?color=blueviolet&include_prereleases)](https://github.com/Mmx233/HeyFileGo/releases)
-[![GoReport](https://goreportcard.com/badge/github.com/Mmx233/HeyFileGo)](https://goreportcard.com/report/github.com/Mmx233/HeyFileGo)
 [![Dockerhub](https://img.shields.io/docker/pulls/mmx233/hey-file-go)](https://hub.docker.com/r/mmx233/hey-file-go/tags)
 
 # Usage
