@@ -15,7 +15,7 @@ func Init(G *gin.RouterGroup, target *share.Target) {
 	file.HEAD("/", controller.DownloadFile)
 	file.GET("info", controller.FileInfo)
 
-	G.POST("upload", middlewares.MustMode(target, share.ModeUpload), controllers.Upload)
+	G.POST("upload", middlewares.MustMode(target, share.ModeUpload), controller.Upload)
 
 	dir := G.Group("dir",
 		middlewares.MustMode(target, share.ModeDir),

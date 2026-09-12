@@ -8,6 +8,7 @@ const (
 	cErrFileNotFound
 	cErrNotFile
 	cErrInvalidPath
+	cErrFileExists
 )
 
 var (
@@ -45,5 +46,10 @@ var (
 		Code:       cErrInvalidPath,
 		Msg:        "Invalid path",
 		HttpStatus: 400,
+	}
+	ErrFileExists = Msg{
+		Code:       cErrFileExists,
+		Msg:        "A file with this name already exists",
+		HttpStatus: 409,
 	}
 )

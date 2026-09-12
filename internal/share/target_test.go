@@ -1,13 +1,16 @@
 package share
 
 import (
+	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
+	"testing/iotest"
 )
 
 func mustWriteFile(t *testing.T, name, content string) {
@@ -24,6 +27,55 @@ func mustRelativePath(t *testing.T, value string) RelativePath {
 		t.Fatalf("ParseRelativePath(%q): %v", value, err)
 	}
 	return name
+}
+
+func TestUploadTargetKeepsDirectoryAndCleansFailedWrites(t *testing.T) {
+	rootPath := t.TempDir()
+	otherPath := t.TempDir()
+	t.Chdir(rootPath)
+	target, err := OpenTarget("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { target.Close() })
+	t.Chdir(otherPath)
+
+	wantErr := errors.New("read failed")
+	src := io.MultiReader(strings.NewReader("partial"), iotest.ErrReader(wantErr))
+	if err := target.SaveUpload("file.txt", src); !errors.Is(err, wantErr) {
+		t.Fatalf("failed upload error = %v, want %v", err, wantErr)
+	}
+	if _, err := os.Lstat(filepath.Join(rootPath, "file.txt")); !errors.Is(err, fs.ErrNotExist) {
+		t.Fatalf("partial file was not removed: %v", err)
+	}
+	if err := target.SaveUpload("file.txt", strings.NewReader("complete")); err != nil {
+		t.Fatal(err)
+	}
+	content, err := os.ReadFile(filepath.Join(rootPath, "file.txt"))
+	if err != nil || string(content) != "complete" {
+		t.Fatalf("saved content = %q, %v", content, err)
+	}
+	if _, err := os.Lstat(filepath.Join(otherPath, "file.txt")); !errors.Is(err, fs.ErrNotExist) {
+		t.Fatalf("upload followed the changed working directory: %v", err)
+	}
+}
+
+func TestUploadRejectsInvalidNames(t *testing.T) {
+	t.Chdir(t.TempDir())
+	target, err := OpenTarget("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { target.Close() })
+	names := []string{"", ".", "..", "../outside", "/absolute", "nested/file", "nested\\file", "file\x00name"}
+	if runtime.GOOS == "windows" {
+		names = append(names, "NUL", "COM1", "file:stream", "C:file")
+	}
+	for _, name := range names {
+		if err := target.SaveUpload(name, strings.NewReader("content")); !errors.Is(err, ErrInvalidPath) {
+			t.Errorf("SaveUpload(%q) = %v, want ErrInvalidPath", name, err)
+		}
+	}
 }
 
 func TestParseRelativePath(t *testing.T) {

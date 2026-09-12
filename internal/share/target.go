@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"strings"
+	"syscall"
 )
 
 type Mode string
@@ -23,7 +25,7 @@ var (
 )
 
 // Target owns the operating-system handles that define the shared object.
-// It is safe for concurrent reads and must remain open while handlers are active.
+// It is safe for concurrent use and must remain open while handlers are active.
 type Target struct {
 	mode     Mode
 	root     *os.Root
@@ -33,7 +35,11 @@ type Target struct {
 
 func OpenTarget(name string) (*Target, error) {
 	if name == "" {
-		return &Target{mode: ModeUpload}, nil
+		root, err := os.OpenRoot(".")
+		if err != nil {
+			return nil, fmt.Errorf("open upload directory: %w", err)
+		}
+		return &Target{mode: ModeUpload, root: root}, nil
 	}
 
 	info, err := os.Stat(name)
@@ -92,6 +98,33 @@ func (t *Target) Close() error {
 		errs = append(errs, t.file.Close())
 	}
 	return errors.Join(errs...)
+}
+
+// SaveUpload creates a new file without replacing an existing directory entry.
+// The file is visible while writing; handled write failures remove it.
+func (t *Target) SaveUpload(name string, src io.Reader) error {
+	if t.mode != ModeUpload || t.root == nil {
+		return ErrWrongMode
+	}
+	relative, err := ParseRelativePath(name)
+	if err != nil || relative == "." || strings.ContainsAny(name, "/\\") {
+		return ErrInvalidPath
+	}
+	file, err := t.root.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o666)
+	if err != nil {
+		// Windows reports a directory collision as EISDIR instead of EEXIST.
+		if errors.Is(err, syscall.EISDIR) {
+			return fmt.Errorf("%w: %w", fs.ErrExist, err)
+		}
+		return err
+	}
+
+	_, copyErr := io.Copy(file, src)
+	closeErr := file.Close()
+	if err := errors.Join(copyErr, closeErr); err != nil {
+		return errors.Join(err, t.root.Remove(name))
+	}
+	return nil
 }
 
 func (t *Target) OpenDirectory(name RelativePath) (*os.File, error) {
