@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 )
@@ -27,10 +28,12 @@ var (
 // Target owns the operating-system handles that define the shared object.
 // It is safe for concurrent use and must remain open while handlers are active.
 type Target struct {
-	mode     Mode
-	root     *os.Root
-	file     *os.File
-	fileName string
+	mode        Mode
+	root        *os.Root
+	file        *os.File
+	fileName    string
+	displayName string
+	uploadGate  chan struct{}
 }
 
 func OpenTarget(name string) (*Target, error) {
@@ -39,7 +42,7 @@ func OpenTarget(name string) (*Target, error) {
 		if err != nil {
 			return nil, fmt.Errorf("open upload directory: %w", err)
 		}
-		return &Target{mode: ModeUpload, root: root}, nil
+		return &Target{mode: ModeUpload, root: root, uploadGate: make(chan struct{}, 3)}, nil
 	}
 
 	info, err := os.Stat(name)
@@ -57,7 +60,13 @@ func OpenTarget(name string) (*Target, error) {
 		if err != nil {
 			return nil, fmt.Errorf("open directory target: %w", err)
 		}
-		return &Target{mode: ModeDir, root: root}, nil
+		displayName := filepath.Base(filepath.Clean(name))
+		if displayName == "." {
+			if absolute, err := filepath.Abs(name); err == nil {
+				displayName = filepath.Base(absolute)
+			}
+		}
+		return &Target{mode: ModeDir, root: root, displayName: displayName}, nil
 	}
 
 	file, err := openReadOnly(name)
@@ -75,9 +84,10 @@ func OpenTarget(name string) (*Target, error) {
 	}
 
 	return &Target{
-		mode:     ModeFile,
-		file:     file,
-		fileName: info.Name(),
+		mode:        ModeFile,
+		file:        file,
+		fileName:    info.Name(),
+		displayName: info.Name(),
 	}, nil
 }
 
@@ -87,6 +97,11 @@ func (t *Target) Mode() Mode {
 
 func (t *Target) FileName() string {
 	return t.fileName
+}
+
+// DisplayName identifies the shared object without exposing its host path.
+func (t *Target) DisplayName() string {
+	return t.displayName
 }
 
 func (t *Target) Close() error {

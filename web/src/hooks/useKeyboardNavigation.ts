@@ -1,205 +1,120 @@
-import { useEffect, useCallback } from "react";
-import { useFileBrowser } from "@/context/useFileBrowser";
-import { getParentPath } from "@/utils/path";
+import type { Dispatch, KeyboardEvent, RefObject } from "react";
+import type { SelectionAction } from "@/context/fileBrowserReducer";
 
-/**
- * Options for the keyboard navigation hook
- */
-export interface UseKeyboardNavigationOptions {
-  /** Sorted items list to navigate through */
-  sortedItems: Dir.Info[];
-  /** Callback when Enter is pressed on a folder */
-  onOpenFolder?: (item: Dir.Info) => void;
-  /** Callback when Enter is pressed on a file */
-  onDownloadFile?: (item: Dir.Info) => void;
-  /** Whether keyboard navigation is enabled */
-  enabled?: boolean;
-}
-
-/**
- * Hook for keyboard navigation in the file browser.
- *
- * Implements:
- * - Arrow keys: Move focus between items
- * - Enter: Open folder / Download file
- * - Escape: Clear selection
- * - Backspace: Navigate to parent folder
- * - Ctrl+A: Select all items
- *
- */
-export function useKeyboardNavigation(
-  options: UseKeyboardNavigationOptions
-): void {
-  const { sortedItems, onOpenFolder, onDownloadFile, enabled = true } = options;
-  const { state, dispatch, navigateTo } = useFileBrowser();
-  const { focusedItem, currentPath, viewMode } = state;
-
-  /**
-   * Get the index of the currently focused item
-   */
-  const getFocusedIndex = useCallback((): number => {
-    if (!focusedItem) return -1;
-    return sortedItems.findIndex((item) => item.name === focusedItem);
-  }, [focusedItem, sortedItems]);
-
-  /**
-   * Move focus by a delta amount (positive = down/right, negative = up/left)
-   * Also selects the focused item
-   */
-  const moveFocus = useCallback(
-    (delta: number) => {
-      if (sortedItems.length === 0) return;
-
-      const currentIndex = getFocusedIndex();
-      let newIndex: number;
-
-      if (currentIndex === -1) {
-        // No current focus, start from beginning or end
-        newIndex = delta > 0 ? 0 : sortedItems.length - 1;
-      } else {
-        // Clamp to valid range
-        newIndex = Math.max(0, Math.min(sortedItems.length - 1, currentIndex + delta));
-      }
-
-      const newFocusedItem = sortedItems[newIndex]?.name;
-      if (newFocusedItem) {
-        // Select the item as well (single selection, no modifier keys)
+export function useKeyboardNavigation({
+  containerRef,
+  paths,
+  focused,
+  dispatch,
+  onOpen,
+  onParent,
+  grid,
+  enabled,
+}: {
+  containerRef: RefObject<HTMLDivElement | null>;
+  paths: string[];
+  focused: string | null;
+  dispatch: Dispatch<SelectionAction>;
+  onOpen: (path: string) => void;
+  onParent: () => void;
+  grid: boolean;
+  enabled: boolean;
+}) {
+  return (event: KeyboardEvent<HTMLDivElement>) => {
+    if (
+      !enabled ||
+      !event.currentTarget.contains(event.target as Node) ||
+      (event.target as HTMLElement).closest(
+        "input, textarea, select, [role=menuitem], [contenteditable=true]",
+      )
+    )
+      return;
+    const elements = Array.from(
+      containerRef.current?.querySelectorAll<HTMLElement>("[data-entry]") || [],
+    );
+    const activePath =
+      (event.target as HTMLElement).closest<HTMLElement>("[data-entry]")
+        ?.dataset.entry || focused;
+    const current = activePath ? paths.indexOf(activePath) : -1;
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "a") {
+      event.preventDefault();
+      dispatch({ type: "page", paths, checked: true });
+      return;
+    }
+    if ((event.target as HTMLElement).closest("button, a, [role=checkbox]"))
+      return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      dispatch({ type: "clear" });
+      containerRef.current?.focus();
+      return;
+    }
+    if (event.key === "Backspace") {
+      event.preventDefault();
+      onParent();
+      return;
+    }
+    if ((event.key === "Enter" || event.key === " ") && activePath) {
+      event.preventDefault();
+      if (event.key === "Enter") onOpen(activePath);
+      else
         dispatch({
-          type: "SELECT_ITEM",
-          payload: { name: newFocusedItem, ctrlKey: false, shiftKey: false, sortedItems },
+          type: "click",
+          path: activePath,
+          toggle: true,
+          page: paths,
         });
-      }
-    },
-    [sortedItems, getFocusedIndex, dispatch]
-  );
-
-  /**
-   * Calculate grid columns based on viewport (approximate)
-   */
-  const getGridColumns = useCallback((): number => {
-    const viewportWidth = window.innerWidth;
-    const cardWidth = 200;
-    const padding = 48;
-    return Math.max(1, Math.floor((viewportWidth - padding) / cardWidth));
-  }, []);
-
-  /**
-   * Handle keyboard events
-   */
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      // Don't handle if focus is in an input element
-      const target = event.target as HTMLElement;
-      if (
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable
-      ) {
-        return;
-      }
-
-      switch (event.key) {
-        case "ArrowUp": {
-          event.preventDefault();
-          if (viewMode === "grid") {
-            moveFocus(-getGridColumns());
-          } else {
-            moveFocus(-1);
-          }
-          break;
-        }
-
-        case "ArrowDown": {
-          event.preventDefault();
-          if (viewMode === "grid") {
-            moveFocus(getGridColumns());
-          } else {
-            moveFocus(1);
-          }
-          break;
-        }
-
-        case "ArrowLeft": {
-          event.preventDefault();
-          if (viewMode === "grid") {
-            moveFocus(-1);
-          }
-          break;
-        }
-
-        case "ArrowRight": {
-          event.preventDefault();
-          if (viewMode === "grid") {
-            moveFocus(1);
-          }
-          break;
-        }
-
-        case "Enter": {
-          event.preventDefault();
-          if (focusedItem) {
-            const item = sortedItems.find((i) => i.name === focusedItem);
-            if (item) {
-              if (item.is_dir) {
-                onOpenFolder?.(item);
-              } else {
-                onDownloadFile?.(item);
-              }
-            }
-          }
-          break;
-        }
-
-        case "Escape": {
-          event.preventDefault();
-          dispatch({ type: "CLEAR_SELECTION" });
-          break;
-        }
-
-        case "Backspace": {
-          event.preventDefault();
-          if (currentPath !== "/") {
-            const parentPath = getParentPath(currentPath);
-            navigateTo(parentPath);
-          }
-          break;
-        }
-
-        case "a":
-        case "A": {
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            dispatch({ type: "SELECT_ALL" });
-          }
-          break;
-        }
-
-        default:
-          break;
-      }
-    },
-    [
-      viewMode,
-      moveFocus,
-      getGridColumns,
-      focusedItem,
-      sortedItems,
-      onOpenFolder,
-      onDownloadFile,
-      dispatch,
-      currentPath,
-      navigateTo,
-    ]
-  );
-
-  useEffect(() => {
-    if (!enabled) return;
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [enabled, handleKeyDown]);
+      return;
+    }
+    if (
+      !paths.length ||
+      ![
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "Home",
+        "End",
+      ].includes(event.key)
+    )
+      return;
+    if (!grid && ["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+    event.preventDefault();
+    const columns =
+      grid && elements.length
+        ? elements.filter(
+            (element) =>
+              Math.abs(
+                element.getBoundingClientRect().top -
+                  elements[0].getBoundingClientRect().top,
+              ) < 2,
+          ).length
+        : 1;
+    let next = current < 0 ? 0 : current;
+    if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = paths.length - 1;
+    else if (current >= 0)
+      next +=
+        event.key === "ArrowDown"
+          ? columns
+          : event.key === "ArrowUp"
+            ? -columns
+            : event.key === "ArrowRight"
+              ? 1
+              : -1;
+    next = Math.max(0, Math.min(paths.length - 1, next));
+    const path = paths[next];
+    if ((event.ctrlKey || event.metaKey) && !event.shiftKey)
+      dispatch({ type: "focus", path });
+    else
+      dispatch({
+        type: "click",
+        path,
+        range: event.shiftKey,
+        toggle: event.ctrlKey || event.metaKey,
+        page: paths,
+      });
+    elements[next]?.focus();
+    elements[next]?.scrollIntoView({ block: "nearest" });
+  };
 }
-
-export default useKeyboardNavigation;

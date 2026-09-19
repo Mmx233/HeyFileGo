@@ -30,6 +30,7 @@ func Execute(version string) error {
 	flags := rootCmd.Flags()
 	flags.BoolVarP(&options.SSL, "ssl", "s", false, "Enable tls for transfer.")
 	flags.UintVarP(&options.Port, "port", "p", 0, "Specify port.")
+	flags.IntVar(&options.UploadConcurrency, "upload-concurrency", 3, "Maximum simultaneous uploads across all clients.")
 	// pflag's IPVar accepts empty values, which must not enable wildcard listening.
 	flags.Func("bind", "`IP` address to listen on (default: all interfaces).", func(value string) error {
 		ip := net.ParseIP(value)

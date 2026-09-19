@@ -18,6 +18,11 @@ Drag and drop a file or folder onto the program, or use the command line:
 
 Simply start the program
 
+Uploads start when files are selected. The server accepts up to three uploads at
+once across all clients; additional uploads wait for a slot. Set
+`--upload-concurrency` to change that limit. The web page supports cancellation,
+retry, and clearing completed transfers.
+
 # Notes
 
 + The file receiving URL opens a web page for uploading files, which will be saved in the program's working directory
@@ -25,8 +30,9 @@ Simply start the program
 
 # Flags
 
-| Flag        | Value  | Description                                               |
-|-------------|--------|-----------------------------------------------------------|
-| -p / --port | uint16 | Specify port                                              |
-| -s / --ssl  | -      | Use HTTPS with auto-generated certificate                 |
-| --bind      | IP     | Listen on a specific IP address (default: all interfaces) |
+| Flag                 | Value   | Description                                                              |
+|----------------------|---------|--------------------------------------------------------------------------|
+| -p / --port          | uint16  | Specify port                                                             |
+| -s / --ssl           | -       | Use HTTPS with auto-generated certificate                                |
+| --bind               | IP      | Listen on a specific IP address (default: all interfaces)                |
+| --upload-concurrency | integer | Maximum simultaneous uploads across all clients (default: 3, minimum: 1) |

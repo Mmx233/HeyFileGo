@@ -1,22 +1,13 @@
-import { FC } from "react";
-
-import { CircularProgress, Stack, CircularProgressProps } from "@mui/material";
-
-export const LoadingFullContainer: FC<CircularProgressProps> = ({
-  size=50,
-  ...props
-}) => {
+import { LoaderCircle } from "lucide-react";
+export default function LoadingFullContainer() {
   return (
-    <Stack
-      sx={{
-        height: "100%",
-        width: "100%",
-      }}
-      justifyContent={"center"}
-      alignItems={"center"}
+    <div
+      id="main-content"
+      className="flex min-h-64 flex-1 items-center justify-center gap-3 text-sm text-muted-foreground"
+      role="status"
     >
-      <CircularProgress size={size} {...props} />
-    </Stack>
+      <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
+      Loading…
+    </div>
   );
-};
-export default LoadingFullContainer;
+}

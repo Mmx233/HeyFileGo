@@ -1,30 +1,18 @@
 import { defineConfig } from "vite";
-import { resolve } from "path";
+import { fileURLToPath } from "node:url";
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import legacy from "@vitejs/plugin-legacy";
-
-const __dirname = resolve();
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react({
-      babel: {
-        plugins: [
-          [
-            "babel-plugin-direct-import",
-            {
-              modules: ["@mui/material", "@mui/icons-material", "@mui/lab"],
-            },
-          ],
-        ],
-      },
-    }),
-    legacy(),
-  ],
+  plugins: [react(), tailwindcss()],
+  build: {
+    target: ["chrome111", "edge111", "safari16.4", "firefox128"],
+    cssTarget: ["chrome111", "edge111", "safari16.4", "firefox128"],
+  },
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
 });

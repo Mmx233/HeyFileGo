@@ -1,80 +1,166 @@
-import { FC, useState, useRef, useMemo, DragEvent } from "react";
-
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type DragEvent,
+} from "react";
+import { ArrowUpFromLine, Files, Plus, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import PageShell from "@/components/PageShell";
+import api, { getErrorMessage } from "@/network/api";
+import { UploadQueue } from "./queue";
 import Item from "./Item";
-import { Stack, Typography, Paper, Table, TableBody } from "@mui/material";
-import { UploadFile } from "@mui/icons-material";
 
-export const Upload: FC = () => {
-  const [dragActive, setDragActive] = useState(false);
-  const [files, setFiles] = useState<File[]>([]);
-
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const onBrowserFile = () => {
-    if (inputRef.current?.files && inputRef.current.files.length > 0) {
-      const fileList = [...inputRef.current.files];
-      setFiles((rawFiles) => [...rawFiles, ...fileList]);
-      inputRef.current.value = "";
-    }
-  };
-  const onDrag = (ev: DragEvent) => {
-    if (ev.dataTransfer?.items) {
-      const files: Array<File> = [];
-      [...ev.dataTransfer.items].forEach((item) => {
-        if (item.kind === "file") {
-          const file = item.getAsFile();
-          if (file) files.push(file);
-        }
-      });
-      if (files.length > 0) setFiles((rawFiles) => [...rawFiles, ...files]);
-    }
-  };
-
-  const items = useMemo(
-    () => files.map((file, i) => <Item key={i} file={file} />),
-    [files],
+export default function Upload({
+  name,
+  concurrency,
+}: {
+  name?: string;
+  concurrency: number;
+}) {
+  const [queue] = useState(
+    () =>
+      new UploadQueue(
+        concurrency,
+        async (file, signal, onProgress) => {
+          const form = new FormData();
+          form.append("file", file);
+          await api.post("upload", form, {
+            signal,
+            onUploadProgress: (event) =>
+              onProgress(event.loaded, event.total ?? file.size),
+          });
+        },
+        getErrorMessage,
+      ),
   );
-
+  const tasks = useSyncExternalStore(queue.subscribe, queue.getSnapshot);
+  const [dragActive, setDragActive] = useState(false);
+  const dragDepth = useRef(0);
+  const input = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    queue.resume();
+    return () => queue.stop();
+  }, [queue]);
+  const completed = tasks.filter((task) => task.status === "success").length;
+  const waiting = tasks.filter((task) => task.status === "queued").length;
+  const active = tasks.filter((task) => task.status === "uploading").length;
+  const onDrop = (event: DragEvent) => {
+    event.preventDefault();
+    dragDepth.current = 0;
+    setDragActive(false);
+    const items = Array.from(event.dataTransfer.items);
+    if (items.some((item) => item.webkitGetAsEntry?.()?.isDirectory)) {
+      toast.error("Folders cannot be uploaded. Choose individual files.");
+      return;
+    }
+    queue.add(Array.from(event.dataTransfer.files));
+  };
   return (
-    <Stack>
-      <Stack
-        width={"100%"}
-        alignItems={"center"}
-        py={9}
-        component={Paper}
-        elevation={1}
-        onClick={() => inputRef.current?.click()}
-        onDrop={(e) => {
-          e.preventDefault();
-          onDrag(e);
-          setDragActive(false);
-        }}
-        onDragOver={(e) => {
-          e.preventDefault();
+    <PageShell
+      title="Send files"
+      description={
+        name
+          ? `Files are received in ${name} on this device.`
+          : "Choose files to send to this device."
+      }
+    >
+      <section
+        className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors sm:py-16 ${dragActive ? "border-primary bg-primary/5" : "border-border bg-card"}`}
+        onDragEnter={(event) => {
+          event.preventDefault();
+          dragDepth.current++;
           setDragActive(true);
         }}
-        onDragLeave={() => setDragActive(false)}
-        sx={{
-          transition: "border-color ease-out .1s",
-          borderColor: dragActive ? "info.main" : "transparent",
-          borderStyle: "dotted",
+        onDragLeave={(event) => {
+          event.preventDefault();
+          if (--dragDepth.current === 0) setDragActive(false);
         }}
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={onDrop}
       >
-        <UploadFile color={"primary"} sx={{ fontSize: "4rem" }} />
-        <Typography mt={1.5}>Click to upload or drag files here</Typography>
+        <div className="mb-5 rounded-2xl bg-primary/5 p-4 text-primary">
+          <ArrowUpFromLine className="size-8" strokeWidth={1.5} />
+        </div>
+        <h2 className="text-lg font-semibold tracking-tight">
+          Drop your files here
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Or choose files from your device. Uploads start automatically.
+        </p>
+        <Button
+          size="lg"
+          className="mt-6 h-10 px-5"
+          onClick={() => input.current?.click()}
+        >
+          <Plus />
+          Choose files
+        </Button>
         <input
-          ref={inputRef}
-          type={"file"}
+          ref={input}
+          className="sr-only"
+          type="file"
           multiple
-          style={{ display: "none" }}
-          onChange={onBrowserFile}
+          tabIndex={-1}
+          aria-label="Choose files to upload"
+          onChange={(event) => {
+            queue.add(Array.from(event.target.files ?? []));
+            event.target.value = "";
+          }}
         />
-      </Stack>
-
-      <Table>
-        <TableBody>{items}</TableBody>
-      </Table>
-    </Stack>
+      </section>
+      <section className="overflow-hidden rounded-xl border bg-card">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-4 sm:px-5">
+          <div className="space-y-1">
+            <h2 className="flex items-center gap-2 text-sm font-semibold">
+              <Files className="size-4 text-muted-foreground" />
+              Transfers
+              {tasks.length > 0 && (
+                <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-normal text-muted-foreground">
+                  {tasks.length}
+                </span>
+              )}
+            </h2>
+            <p className="text-xs text-muted-foreground" role="status">
+              {tasks.length
+                ? `${active} uploading · ${waiting} queued · ${completed} complete`
+                : `Up to ${concurrency} files can be received at once.`}
+            </p>
+          </div>
+          {completed > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => queue.clearCompleted()}
+            >
+              <Trash2 />
+              Clear completed
+            </Button>
+          )}
+        </div>
+        {tasks.length ? (
+          <ul className="divide-y">
+            {tasks.map((task) => (
+              <Item
+                key={task.id}
+                task={task}
+                onCancel={() => queue.cancel(task.id)}
+                onRetry={() => queue.retry(task.id)}
+              />
+            ))}
+          </ul>
+        ) : (
+          <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
+            <Files className="mb-1 size-7 text-muted-foreground/50" />
+            <p className="text-sm font-medium">No transfers yet</p>
+            <p className="text-xs text-muted-foreground">
+              Your upload progress will appear here.
+            </p>
+          </div>
+        )}
+      </section>
+    </PageShell>
   );
-};
-export default Upload;
+}

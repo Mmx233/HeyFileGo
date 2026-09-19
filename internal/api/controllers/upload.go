@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/fs"
 	"log/slog"
+	"net/http"
 
 	"github.com/Mmx233/HeyFileGo/v2/internal/api/callback"
 	"github.com/Mmx233/HeyFileGo/v2/internal/share"
@@ -12,6 +13,13 @@ import (
 )
 
 func (h *Controller) Upload(c *gin.Context) {
+	release, err := h.target.AcquireUpload(c.Request.Context())
+	if err != nil {
+		c.AbortWithStatus(http.StatusRequestTimeout)
+		return
+	}
+	defer release()
+
 	reader, err := c.Request.MultipartReader()
 	if err != nil {
 		callback.ErrorWithTip(c, callback.ErrForm, "Failed to read form file", err)

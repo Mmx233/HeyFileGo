@@ -16,6 +16,14 @@ func New(target *share.Target) *Controller {
 	return &Controller{target: target}
 }
 
+func (h *Controller) Info(c *gin.Context) {
+	callback.Success(c, gin.H{
+		"mode":               h.target.Mode(),
+		"name":               h.target.DisplayName(),
+		"upload_concurrency": h.target.UploadConcurrency(),
+	})
+}
+
 func targetError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, share.ErrWrongMode):

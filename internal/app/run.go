@@ -16,10 +16,11 @@ import (
 )
 
 type Options struct {
-	SSL  bool
-	Port uint
-	Bind net.IP
-	Path string
+	SSL               bool
+	Port              uint
+	Bind              net.IP
+	Path              string
+	UploadConcurrency int
 }
 
 func apiServer(listener net.Listener, target *share.Target, ssl bool) {
@@ -58,11 +59,19 @@ func printEth(printer netInterface.Printer, ethUrl *url.URL, target *share.Targe
 }
 
 func Run(options Options) error {
+	if options.UploadConcurrency < 1 {
+		return fmt.Errorf("upload concurrency must be at least 1")
+	}
 	target, err := share.OpenTarget(options.Path)
 	if err != nil {
 		return fmt.Errorf("failed to read target path: %w", err)
 	}
 	defer target.Close()
+	if target.Mode() == share.ModeUpload {
+		if err := target.SetUploadConcurrency(options.UploadConcurrency); err != nil {
+			return err
+		}
+	}
 	slog.Info("Running mode: " + string(target.Mode()))
 
 	var bind string
