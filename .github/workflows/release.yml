@@ -36,7 +36,8 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          go-version: 'stable'
+          go-version-file: go.mod
+          cache: false
 
       - name: Build Web
         run: |
@@ -46,6 +47,7 @@ jobs:
 
       - name: Build Go
         env:
+          NAME: hey
           LDFLAGS: -X main.Version=${{ github.ref_name }}
         run: |
           ./build/release --output build/output \
